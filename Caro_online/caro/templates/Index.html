@@ -7,5 +7,12 @@
 </head>
 <body>
     <h1>Gomoku</h1>
+    {% if name %}
+        Welcome {{ name }}
+        <a href="{% url 'Logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'Get_login' %}">Login</a>
+        <a href="{% url 'Get_register' %}">Register</a>
+    {% endif %}
 </body>
 </html>
