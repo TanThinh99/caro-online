@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Room</title>
+</head>
+<body>
+    <h1>Create room for a match</h1>
+    <form action="{% url 'Post_register' %}" method="post">
+        {% csrf_token %}
+
+        <label for="name">Room name</label><br>
+        <input type="text" name="name" id="name"><br><br>
+
+        <label for="type">Board type</label><br>
+        <select name="type" id="type" required>
+            <option value="">Choose type</option>
+            <option value="3">3x3</option>
+            <option value="4">4x4</option>
+            <option value="5">5x5</option>
+            <option value="6">6x6</option>
+            <option value="7">7x7</option>
+            <option value="8">8x8</option>
+        </select><br><br>
+        
+        <label>Match type</label><br>
+        <input type="radio" name="match_type" id="withComputer" value="0">
+        <label for="withComputer">Match with computer</label>
+        <input type="radio" name="match_type" id="withPlayer" value="1">
+        <label for="withPlayer">Match with player</label>
+        <br><br>
+
+        <label for="pass1">Time of a turn</label><br>
+        <input type="number" name="time" id="time" min="15" max="120"><br><br>
+        <input type="checkbox" name="notTime" id="notTime" value="1">
+        <label for="notTime">Not time</label>
+
+        <label for="password">Password</label><br>
+        <input type="checkbox" name="notPass" id="notPass" value="1">
+        <label for="notPass">I needn't a password for this room</label>
+        <input type="password" name="password" id="password"><br><br>
+
+        <input type="submit" value="Create room">
+        <input type="reset" value="Reset">
+    </form>
+</body>
+</html>

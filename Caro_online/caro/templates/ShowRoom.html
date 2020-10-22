@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomoku match</title>
+
+    {% load static %}
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+    <script src="{% static 'js/firebase_config.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/ShowRoom.css' %}">
+</head>
+<body style="width: 100%;">
+    <p><a href="{% url 'Leave_room' room_person_key %}">&lt;&lt;Leave room</a></p>
+    <input type="hidden" name="room_key" id="room_key" value="{{ room_key }}">
+    <div id="board"></div>
+    <div style=" width: 38%;" id="infoRoom">
+        <div style="height: 50px; width: 70px; border: 1px dashed red;">First player</div>
+        <div style="height: 50px; width: 70px; border: 1px dashed yellow;">Second player</div>
+        <div style="height: 215px; width: 200px; border: 1px dashed green;">
+            <label for="type">Board type</label><br>
+            <select name="type" id="type" required>
+                <option value="">Choose type</option>
+                <option value="3">3x3</option>
+                <option value="4">4x4</option>
+                <option value="5">5x5</option>
+                <option value="6">6x6</option>
+                <option value="7">7x7</option>
+                <option value="8">8x8</option>
+            </select><br><br>
+            
+            <label>Match type</label><br>
+            <input type="radio" name="match_type" id="withComputer" value="0">
+            <label for="withComputer">Match with computer</label><br>
+            <input type="radio" name="match_type" id="withPlayer" value="1">
+            <label for="withPlayer">Match with player</label>
+            <br><br>
+
+            <label for="pass1">Time of a turn</label><br>
+            <input type="number" name="time" id="time" min="5" max="90"> (seconds)<br><br>
+            <input type="checkbox" name="notTime" id="notTime" value="1" onchange="ChooseNotTime()">
+            <label for="notTime">Not time</label>
+        </div>
+        <div style="height: 150px; width: 150px; border: 1px dashed orange;">Chat</div>
+        <div style="height: 150px; width: 120px; border: 1px dashed brown;" id="containPersons">Room person</div>
+    </div>
+    <script src="{% static 'js/ShowRoom.js' %}"></script>
+</body>
+</html>
