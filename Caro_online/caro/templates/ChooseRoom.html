@@ -6,24 +6,15 @@
     <title>Welcome to Gomoku</title>
 
     {% load static %}
-    <script src="{% static 'js/ChooseRoom.js' %}"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+    <script src="{% static 'js/firebase_config.js' %}"></script>
 </head>
 <body>
     <h1>Gomoku Rooms</h1>
     <a href="{% url 'Index' %}">&lt;&lt;Go to main page</a> | 
     <a href="{% url 'Create_room' %}">Create room</a>
-    {% for key, room, username in room_zip %}
-        <div id="rooms" style="border: 1px dashed red; margin: 7px; padding: 7px;" onclick="EnterRoom('{{user_uid}}', '{{ key }}')">
-            Boss name: {{ username }}<br>
-            Board type: {{ room.board_type }}x{{ room.board_type }}<br>
-            Type: 
-                {% if room.type == 0 %}
-                    Match with the computer
-                {% elif room.type == 1 %}
-                    Match with the player
-                {% endif %}<br>
-            Time of a turn: {{ room.time_of_a_turn }}
-        </div>
-    {% endfor %}
+    <div id="containRooms"></div>
+    <input type="hidden" id="user" value="{{ user_uid }}">
 </body>
+<script src="{% static 'js/ChooseRoom.js' %}"></script>
 </html>

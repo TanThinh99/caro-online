@@ -1,4 +1,3 @@
-
 var firebaseConfig = {
     apiKey: "AIzaSyAppuqPLFAorTEklnzWAszFuPe6AS3xEh8",
     authDomain: "caro-online-67173.firebaseapp.com",

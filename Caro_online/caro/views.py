@@ -127,25 +127,25 @@ def ChooseRoom(request):
             request.session["uid_of_free"] = uid_of_free
             uid = uid_of_free
 
-        # Get data for ShowRoom
-    roomsList = []
-    roomsKeyList = []
-    nameList = []
-    users = database.child("users").get().val()
-    rooms = database.child("rooms").get().val()
-    if rooms is not None:
-        for key in rooms:
-            roomsList.append(rooms[key])
-            roomsKeyList.append(key)
+    #     # Get data for ShowRoom
+    # roomsList = []
+    # roomsKeyList = []
+    # nameList = []
+    # users = database.child("users").get().val()
+    # rooms = database.child("rooms").get().val()
+    # if rooms is not None:
+    #     for key in rooms:
+    #         roomsList.append(rooms[key])
+    #         roomsKeyList.append(key)
 
-            user_key = rooms[key].get("boss_room")
-            try:
-                name = users[user_key].get("name")
-            except:
-                name = user_key
-            nameList.append(name)
-    room_zip = zip(roomsKeyList, roomsList, nameList)
-    return render(request, "ChooseRoom.html", {"room_zip": room_zip, "user_uid": uid})
+    #         user_key = rooms[key].get("boss_room")
+    #         try:
+    #             name = users[user_key].get("name")
+    #         except:
+    #             name = user_key
+    #         nameList.append(name)
+    # room_zip = zip(roomsKeyList, roomsList, nameList)
+    return render(request, "ChooseRoom.html", {"user_uid": uid})
 
 
 def CreateRoom(request):
