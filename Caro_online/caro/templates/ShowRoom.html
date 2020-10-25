@@ -10,16 +10,25 @@
     <script src="{% static 'js/firebase_config.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/ShowRoom.css' %}">
 </head>
-<body style="width: 100%;">
-    <p><a href="{% url 'Leave_room' room_person_key %}">&lt;&lt;Leave room</a></p>
-    <input type="hidden" name="room_key" id="room_key" value="{{ room_key }}">
-    <div id="board"></div>
-    <div style=" width: 38%;" id="infoRoom">
-        <div style="height: 50px; width: 70px; border: 1px dashed red;">First player</div>
-        <div style="height: 50px; width: 70px; border: 1px dashed yellow;">Second player</div>
+<body style="width: 100%;" onbeforeunload="return CheckReadyState()">
+    <p>&nbsp;<a href="{% url 'Leave_room' room_person_key %}" id="leaveRoomLink">&lt;&lt;Leave room</a></p>
+    <input type="hidden" id="room_key" value="{{ room_key }}">
+    <input type="hidden" id="user_key" value="{{ user_uid }}">
+    <input type="hidden" id="isPlayer" value="0">
+    <div id="leftArea">
+        <div id="board"></div>
+        <p>&nbsp;<span id="countTime"></span></p>
+        <button id="readyBtn">Ready</button>
+        <button id="notReadyBtn" disabled>Not ready</button>
+        <input type="hidden" id="readyState" value="0">
+    </div>
+    
+    <div style="width: 38%;" id="infoRoom">
+        <div style="height: 50px; width: 70px; border: 1px dashed red;" id="player1">#1</div>
+        <div style="height: 50px; width: 70px; border: 1px dashed yellow;" id="player2">#2</div>
         <div style="height: 215px; width: 200px; border: 1px dashed green;">
-            <label for="type">Board type</label><br>
-            <select name="type" id="type" required>
+            <label for="board_type">Board type</label><br>
+            <select name="board_type" id="board_type">
                 <option value="">Choose type</option>
                 <option value="3">3x3</option>
                 <option value="4">4x4</option>
@@ -38,12 +47,13 @@
 
             <label for="pass1">Time of a turn</label><br>
             <input type="number" name="time" id="time" min="5" max="90"> (seconds)<br><br>
-            <input type="checkbox" name="notTime" id="notTime" value="1" onchange="ChooseNotTime()">
-            <label for="notTime">Not time</label>
+
+            <button id="setRuleBtn">Set rule</button>
         </div>
         <div style="height: 150px; width: 150px; border: 1px dashed orange;">Chat</div>
         <div style="height: 150px; width: 120px; border: 1px dashed brown;" id="containPersons">Room person</div>
     </div>
-    <script src="{% static 'js/ShowRoom.js' %}"></script>
+    <script src="{% static 'js/ShowRoom/InitAndSetRule.js' %}"></script>
+    <script src="{% static 'js/ShowRoom/Match.js' %}"></script>
 </body>
 </html>

@@ -1,9 +1,12 @@
-#board {
+#leftArea {
+    float: left;
+    width: 55%;
+    border: 1px dashed black;
     margin: 10px;
-    height: 400px; 
-    width: 55%; 
+}
+
+#board {         
     border: 1px dashed blue; 
-    float:left;
 }
 
 #board td{
@@ -12,6 +15,11 @@
     border-radius: 2px;
 }
 
+#board .turning td:hover{
+    background-color: #FAFAFA;
+}
+
 #infoRoom{
     float:left;
+    margin: 10px;
 }

@@ -16,7 +16,12 @@ data_rooms.on("value", function(snapshot) {
     for(key in rooms)
     {
         str += "<div style='border: 1px dashed red; margin: 7px; padding: 7px;' onclick='EnterRoom(\""+ user +"\", \""+ key +"\")'>";
-            str += "Boss name: "+ userList[rooms[key].boss_room] +"<br>";
+            name = userList[rooms[key].boss_room];
+            if(name == "undefined")
+            {
+                name = rooms[key].boss_room;
+            }
+            str += "Boss name: "+ name +"<br>";
             str += "Board type: "+ rooms[key].board_type +"x"+ rooms[key].board_type +"<br>";
             if(rooms[key].type == 0)
             {

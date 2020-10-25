@@ -65,14 +65,12 @@ def PostRegister(request):
     name   = request.POST.get("name")
     nation = request.POST.get("nation")
     score = 0
-    flag_type = "x"
 
     data = {
         "name": name,
         "email": email,
         "nation": nation,
-        "score": score,
-        "flag_type": flag_type
+        "score": score
     }
     database.child("users").child(uid).set(data)
     return redirect("../")
@@ -126,25 +124,6 @@ def ChooseRoom(request):
                 uid_of_free = uid_of_free +''+ random.choice(letter)
             request.session["uid_of_free"] = uid_of_free
             uid = uid_of_free
-
-    #     # Get data for ShowRoom
-    # roomsList = []
-    # roomsKeyList = []
-    # nameList = []
-    # users = database.child("users").get().val()
-    # rooms = database.child("rooms").get().val()
-    # if rooms is not None:
-    #     for key in rooms:
-    #         roomsList.append(rooms[key])
-    #         roomsKeyList.append(key)
-
-    #         user_key = rooms[key].get("boss_room")
-    #         try:
-    #             name = users[user_key].get("name")
-    #         except:
-    #             name = user_key
-    #         nameList.append(name)
-    # room_zip = zip(roomsKeyList, roomsList, nameList)
     return render(request, "ChooseRoom.html", {"user_uid": uid})
 
 
@@ -154,12 +133,25 @@ def CreateRoom(request):
         uid = GetUser(token)
     except KeyError:
         uid = request.session["uid_of_free"]
+    
+        # Create board
+    data = {
+        "detail": {
+            "user1": "",
+            "user2": ""
+        }        
+    }
+    board = database.child("boards").push(data)
+
+        # Create room
     data = {
         "boss_room": uid,
         "amount_of_message": 0,
         "board_type": 5,
         "type": 1,
-        "time_of_a_turn": 10
+        "time_of_a_turn": 10,
+        "board": board.get("name"),
+        "match_turn": 1
     }
     room = database.child("rooms").push(data)
         # room = {"name": "<key>"}
@@ -182,7 +174,7 @@ def ShowRoom(request, room_key):
     room_person = database.child("room_persons").order_by_child("user").equal_to(uid).order_by_child("room").equal_to(room_key).get().val()
     for key in room_person:
         room_person_key = key
-    return render(request, "ShowRoom.html", {"room_key": room_key, "room_person_key": room_person_key})
+    return render(request, "ShowRoom.html", {"room_key": room_key, "user_uid": uid, "room_person_key": room_person_key})
 
 
 def EnterRoom(request, user_key, room_key):
@@ -197,17 +189,21 @@ def EnterRoom(request, user_key, room_key):
 def LeaveRoom(request, room_person_key):
         # Get room_key
     room_key = database.child("room_persons").child(room_person_key).child("room").get().val()
-
+    board_key = database.child("rooms").child(room_key).child("board").get().val()
         # Delete room_person at room_person_key
     database.child("room_persons").child(room_person_key).remove()
 
+        # If room doesn't have user, we will delete it
     try:
         persons = database.child("room_persons").order_by_child("room").equal_to(room_key).get().val()
     except:
         database.child("rooms").child(room_key).remove()
+
+            # Delete new board of this room
+        database.child("boards").child(board_key).remove()
     return redirect("../ChooseRoom")
 
 
 # Temp function
 def Temp(request):
-    print(request.session["token"])
+    print(request.session["uid_of_free"])
