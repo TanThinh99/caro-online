@@ -6,7 +6,11 @@
 }
 
 #board {         
-    border: 1px dashed blue; 
+    border: 1px dashed blue;
+}
+
+#board table{
+    margin: auto;
 }
 
 #board td{
@@ -15,8 +19,20 @@
     border-radius: 2px;
 }
 
+.x {
+    background-image: url("../image/x.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.o {
+    background-image: url("../image/o.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
 #board .turning td:hover{
-    background-color: #FAFAFA;
+    background-color: rgb(140, 164, 243);
 }
 
 #infoRoom{

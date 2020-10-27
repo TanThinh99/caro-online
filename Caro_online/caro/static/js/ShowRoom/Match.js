@@ -8,6 +8,16 @@ users.once("value", function(snapshot) {
     }
 });
 
+function GetUserName(user_key)
+{
+    name = userList[user_key];
+    if(name == "undefined")
+    {
+        name = user_key;
+    }
+    return name;
+}
+
     // Cập nhật tên của những người đang ở trong phòng
 room_key = document.getElementById("room_key").value;
 data_room_person = firebase.database().ref("room_persons").orderByChild("room").equalTo(room_key);
@@ -17,59 +27,115 @@ data_room_person.on("value", function(snapshot) {
     for (key in data)
     {
         user_key = data[key].user;
-        name = userList[user_key];
-        if(name == "undefined")
-        {
-            name = user_key;
-        }   
+        name = GetUserName(user_key);
         str += "<p>"+ name +"</p>";
     }
     document.getElementById("containPersons").innerHTML = str;
 });
 
 
-//Ready button and Not Ready button
 room_key = document.getElementById("room_key").value;
-user_key = document.getElementById("user_key").value;
-
 var board_key;
-data_room = firebase.database().ref("rooms").child(room_key)
+var data_room = firebase.database().ref("rooms").child(room_key)
 data_room.once("value", function(snapshot) {
     room = snapshot.val();
     board_key = room.board;
 
-        // Check user1 and user are not empty, the match will start
-    data_board = firebase.database().ref("boards").child(board_key).child("detail");
+    // Run when detail in board changed
+    var data_board = firebase.database().ref("boards").child(board_key).child("detail");
     data_board.on("value", function(snapshot) {
-        board_detail = snapshot.val();
-        if(board_detail.user1 != "" && board_detail.user2 != "")
+        var board_detail = snapshot.val();
+
+            // Update name in id="player(1/2)" when user click "ready"
+        if(board_detail.user1 != "")
         {
+            document.getElementById("player1").innerHTML = "#1 "+ GetUserName(board_detail.user1);
+        }
+        else    // board_detail.user1 == ""
+        {
+            document.getElementById("player1").innerHTML = "#1";
+        }
+
+        if(board_detail.user2 != "")
+        {
+            document.getElementById("player2").innerHTML = "#2 "+ GetUserName(board_detail.user2);
+        }
+        else    // board_detail.user2 == ""
+        {
+            document.getElementById("player2").innerHTML = "#2";
+        }
+        
+            // Check user1 and user2 are not empty, the match will start
+        var matchStarted = document.getElementById("matchStarted").value;
+        if((board_detail.user1 != "") && (board_detail.user2 != "") && (matchStarted == "0"))
+        {
+            document.getElementById("matchStarted").value = "1";
             document.getElementById("readyBtn").disabled = true;
             document.getElementById("notReadyBtn").disabled = true;
 
-                // Define is player
+            document.getElementById("user1").value = board_detail.user1;
+            document.getElementById("user2").value = board_detail.user2;
+
+            // Define is player
             user_key = document.getElementById("user_key").value;
             if(user_key == board_detail.user1 || user_key == board_detail.user2)
             {
                 document.getElementById("isPlayer").value = "1";
             }
 
-                // Set board table again
+            // Set board table again
+            isPlayer = document.getElementById("isPlayer").value;
+                // user is player, and user is #1 player
+            if(isPlayer == "1")
+            {       // user1 plays first turn
+                if(board_detail.user1 == user_key)
+                {
+                    str = "<table border='1' class='turning' id='positionsTable'>";
+                }
+                else    // board_detail.user2 == user_key
+                {
+                    str = "<table border='1' class='' id='positionsTable'>";
+                }                    
+            }                
+            else    // user is not player, or user is #2 player
+            {
+                str = "<table border='1'>";    
+            }
+
+                // Create new table for board
             board_type = document.getElementById("board_type").value;
-            str = "<table border='1'>";
-            for(i=0; i<board_type; i++)
+            for(i=1; i<=board_type; i++)
             {
                 str += "<tr>";
-                for(j=0; j<board_type; j++)
+                for(j=1; j<=board_type; j++)
                 {
-                    str += "<td>&nbsp;</td>";
+                    if(isPlayer == "1")
+                    {
+                        str += "<td id='pos"+ i +"_"+ j +"' onclick='ChoosePosition("+ i +", "+ j +")'>&nbsp;</td>";
+                    }
+                    else if(isPlayer == "0")
+                    {
+                        str += "<td></td>";
+                    }
                 }
-                str += "</tr>"
+                str += "</tr>";
             }
             str += "</table>";
             document.getElementById("board").innerHTML = str;
 
-                // Count time before match starts
+            // Create matrix for board
+            rows = [];
+            for(i=1; i<=board_type; i++)
+            {
+                cols = [];
+                for(j=1; j<=board_type; j++)
+                {
+                    cols[j] = -1;
+                }
+                rows[i] = cols;
+            }
+
+            // Count time before match starts
             number = 5;
             count = setInterval(function() {
                 str = "Match will start after "+ number +" seconds";
@@ -84,16 +150,67 @@ data_room.once("value", function(snapshot) {
             }, 1000);
         }
     });
+
+    var data_position_board = firebase.database().ref("boards").child(board_key).child("positions");
+    data_position_board.on("child_added", function(snapshot) {
+        var position = snapshot.val();
+        var x = position.position_x;
+        var y = position.position_y;
+            // check x, x == "", turns ago is out of time, we no work
+        if(x != "")
+        {
+            if(position.flag_type == "x")
+            {
+                document.getElementById("pos"+ x +"_"+ y).classList.add("x");
+            }
+            else
+            {
+                document.getElementById("pos"+ x +"_"+ y).classList.add("o");
+            }
+        }
+            // Set matchTurn
+        if(position.flag_type == "x")
+        {
+            document.getElementById("matchTurn").value = "2";
+        }
+        else    // position.flag_type == "o"
+        {
+            document.getElementById("matchTurn").value = "1";
+        }
+
+            // set value for matrix
+        var cols = rows[x];
+        if(position.flag_type == "x")
+        {
+            cols[y] = 1;
+        }
+        else    // position.flag_type == "o"
+        {
+            cols[y] = 0;
+        }
+        rows[x] = cols;
+
+            // Add class="turning" for user
+        user1 = document.getElementById("user1").value;
+        user2 = document.getElementById("user2").value;
+        user_key = document.getElementById("user_key").value;
+        matchTurn = document.getElementById("matchTurn").value;
+        if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
+        {
+            document.getElementById("positionsTable").classList.add("turning");
+        }
+    });
 });
 
 
+//Ready button and Not Ready button
 readyBtn = document.getElementById("readyBtn");
 notReadyBtn = document.getElementById("notReadyBtn");
 readyBtn.onclick = function() {
     readyBtn.disabled = true;
     notReadyBtn.disabled = false;
-    // document.getElementById("leaveRoomLink").hidden = true;
     document.getElementById("readyState").value = "1";
+        
         // Check user1, user2
     data_board = firebase.database().ref("boards").child(board_key).child("detail");
     data_board.once("value", function(snapshot) {
@@ -101,23 +218,13 @@ readyBtn.onclick = function() {
         user1 = board_detail.user1;
         user2 = board_detail.user2;
         user_key = document.getElementById("user_key").value;
-            // Get name of user
-        name = userList[user_key];
-        if(name == "undefined")
-        {
-            name = user_key;
-        }
         if(user1 == "")
         {
-            document.getElementById("player1").innerHTML = "#1 "+ name;
-
             data = {"user1": user_key};
             firebase.database().ref("boards").child(board_key).child("detail").update(data)
         }
         else if(user2 == "")
         {
-            document.getElementById("player2").innerHTML = "#2 "+ name;
-
             data = {"user2": user_key};
             firebase.database().ref("boards").child(board_key).child("detail").update(data)
         }
@@ -128,8 +235,8 @@ readyBtn.onclick = function() {
 notReadyBtn.onclick = function() {
     readyBtn.disabled = false;
     notReadyBtn.disabled = true;
-    // document.getElementById("leaveRoomLink").hidden = false;
     document.getElementById("readyState").value = "0";
+    
         // user leave this board
     data_board = firebase.database().ref("boards").child(board_key).child("detail");
     data_board.once("value", function(snapshot) {
@@ -139,37 +246,15 @@ notReadyBtn.onclick = function() {
         user_key = document.getElementById("user_key").value;
         if(user1 == user_key)
         {
-            document.getElementById("player1").innerHTML = "#1";
-
             data = {"user1": ""};
             firebase.database().ref("boards").child(board_key).child("detail").update(data)
         }
         else if(user2 == user_key)
         {
-            document.getElementById("player1").innerHTML = "#2";
-
             data = {"user2": ""};
             firebase.database().ref("boards").child(board_key).child("detail").update(data)
         }
     });
-}
-
-
-// Clock uses to count time
-var count;
-function CountTime(number)
-{
-    count = setInterval(function() {
-        str = number +" seconds";
-        document.getElementById("countTime").innerHTML = str;
-        number--;
-
-        if(number == -1)
-        {
-            clearInterval(count);
-            document.getElementById("countTime").innerHTML = "START MATCH";
-        }
-    }, 1000);
 }
 
 
@@ -198,4 +283,72 @@ function CheckReadyState()
             }
         });
     }
+}
+
+
+// Clock uses to count time
+function CountTime(number)
+{
+    var count;
+    count = setInterval(function() {
+        str = number +" seconds";
+        document.getElementById("countTime").innerHTML = str;
+        number--;
+
+        if(number == -1)
+        {
+            clearInterval(count);
+            document.getElementById("countTime").innerHTML = "START MATCH";
+        }
+    }, 1000);
+}
+
+
+// Players choose position when match started
+function ChoosePosition(x, y)
+{
+    var matchTurn = document.getElementById("matchTurn").value;
+    var user_key = document.getElementById("user_key").value;
+    var user1 = document.getElementById("user1").value;
+    var user2 = document.getElementById("user2").value;
+    if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
+    {
+            // Check that position is empty?
+        var cols = rows[x];
+        if(cols[y] == -1)
+        {
+            // Update matchTurn, Main purpose: avoid player clicks two times
+            if(matchTurn == "1")
+            {
+                document.getElementById("matchTurn").value = "2";
+            }
+            else if(matchTurn == "2")
+            {
+                document.getElementById("matchTurn").value = "1";
+            }
+
+            // Delete class="turning" in table, turning used when user hover on <td>
+            document.getElementById("positionsTable").classList.remove("turning");
+
+            // check timer
+
+            // Save position
+            var flag_type;
+            
+            if(matchTurn == "1")
+            {
+                flag_type = "x";
+            }
+            else if(matchTurn == "2")
+            {
+                flag_type = "o";
+            }
+            data = {
+                "flag_type": flag_type,
+                "position_x": x,
+                "position_y": y
+            }
+            firebase.database().ref("boards").child(board_key).child("positions").push(data)
+        }        
+    }    
 }

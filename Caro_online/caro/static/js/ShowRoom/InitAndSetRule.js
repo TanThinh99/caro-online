@@ -14,7 +14,7 @@ room.once("value", function(snapshot) {
         str += "<tr>";
         for(j=0; j<board_type; j++)
         {
-            str += "<td>&nbsp;</td>";
+            str += "<td></td>";
         }
         str += "</tr>"
     }
