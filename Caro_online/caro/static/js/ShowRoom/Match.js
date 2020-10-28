@@ -76,6 +76,9 @@ data_room.once("value", function(snapshot) {
             document.getElementById("user1").value = board_detail.user1;
             document.getElementById("user2").value = board_detail.user2;
 
+                // disabled button setting rule of boss_room
+            document.getElementById("setRuleBtn").disabled = true;
+
             // Define is player
             user_key = document.getElementById("user_key").value;
             if(user_key == board_detail.user1 || user_key == board_detail.user2)
@@ -146,49 +149,53 @@ data_room.once("value", function(snapshot) {
                 {
                     clearInterval(count);
                     document.getElementById("countTime").innerHTML = "START MATCH";
+
+                        // Run timer
+                    time = document.getElementById("time").value *1;
+                    RunTimer(time);
                 }
             }, 1000);
         }
     });
 
+        // Run whenever user choose position or out of time
     var data_position_board = firebase.database().ref("boards").child(board_key).child("positions");
     data_position_board.on("child_added", function(snapshot) {
         var position = snapshot.val();
         var x = position.position_x;
         var y = position.position_y;
-            // check x, x == "", turns ago is out of time, we no work
-        if(x != "")
+            // stop timer
+        clearInterval(count);
+
+            // check x, x == 0, turns ago is out of time, we no work
+        if(x != 0)
         {
+                // Set background-image (x or y) for position, and set value for matrix
+            var cols = rows[x];
             if(position.flag_type == "x")
             {
                 document.getElementById("pos"+ x +"_"+ y).classList.add("x");
+                cols[y] = 1;
+                document.getElementById("matchTurn").value = "2";
             }
             else
             {
                 document.getElementById("pos"+ x +"_"+ y).classList.add("o");
+                cols[y] = 0;
+                document.getElementById("matchTurn").value = "1";
             }
+            rows[x] = cols;
         }
+
             // Set matchTurn
         if(position.flag_type == "x")
         {
             document.getElementById("matchTurn").value = "2";
         }
-        else    // position.flag_type == "o"
+        else
         {
             document.getElementById("matchTurn").value = "1";
         }
-
-            // set value for matrix
-        var cols = rows[x];
-        if(position.flag_type == "x")
-        {
-            cols[y] = 1;
-        }
-        else    // position.flag_type == "o"
-        {
-            cols[y] = 0;
-        }
-        rows[x] = cols;
 
             // Add class="turning" for user
         user1 = document.getElementById("user1").value;
@@ -199,8 +206,32 @@ data_room.once("value", function(snapshot) {
         {
             document.getElementById("positionsTable").classList.add("turning");
         }
+
+            // Run timer
+        time = document.getElementById("time").value *1;
+        RunTimer(time);
     });
 });
+
+
+// Clock uses to run timer
+var count;
+function RunTimer(number)
+{    
+    count = setInterval(function() {
+        str = number +" seconds";
+        document.getElementById("countTime").innerHTML = str;
+        number--;
+
+        if(number == -1)
+        {
+            clearInterval(count);
+            document.getElementById("countTime").innerHTML = "OUT OF TIME";
+                // User do not choose a position but was out of time
+            ChoosePosition(0, 0);
+        }
+    }, 1000);
+}
 
 
 //Ready button and Not Ready button
@@ -286,24 +317,6 @@ function CheckReadyState()
 }
 
 
-// Clock uses to count time
-function CountTime(number)
-{
-    var count;
-    count = setInterval(function() {
-        str = number +" seconds";
-        document.getElementById("countTime").innerHTML = str;
-        number--;
-
-        if(number == -1)
-        {
-            clearInterval(count);
-            document.getElementById("countTime").innerHTML = "START MATCH";
-        }
-    }, 1000);
-}
-
-
 // Players choose position when match started
 function ChoosePosition(x, y)
 {
@@ -313,11 +326,19 @@ function ChoosePosition(x, y)
     var user2 = document.getElementById("user2").value;
     if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
     {
-            // Check that position is empty?
-        var cols = rows[x];
-        if(cols[y] == -1)
+            // Check (that position is empty?) or (x=0, y=0 => This is out of time)
+        var pass = true;
+        if(x != 0)
         {
-            // Update matchTurn, Main purpose: avoid player clicks two times
+            var cols = rows[x];
+            if(cols[y] != -1)
+            {
+                pass = false;
+            }
+        }
+        if( pass )
+        {
+                // Update matchTurn, Main purpose: avoid player clicks two times
             if(matchTurn == "1")
             {
                 document.getElementById("matchTurn").value = "2";
@@ -327,14 +348,11 @@ function ChoosePosition(x, y)
                 document.getElementById("matchTurn").value = "1";
             }
 
-            // Delete class="turning" in table, turning used when user hover on <td>
+                // Delete class="turning" in table, turning used when user hover on <td>
             document.getElementById("positionsTable").classList.remove("turning");
 
-            // check timer
-
-            // Save position
-            var flag_type;
-            
+                // Save position
+            var flag_type;            
             if(matchTurn == "1")
             {
                 flag_type = "x";
