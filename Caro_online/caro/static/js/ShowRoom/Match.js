@@ -159,11 +159,13 @@ data_room.once("value", function(snapshot) {
     });
 
         // Run whenever user choose position or out of time
+    var boss_room = room.boss_room;
     var data_position_board = firebase.database().ref("boards").child(board_key).child("positions");
     data_position_board.on("child_added", function(snapshot) {
         var position = snapshot.val();
         var x = position.position_x;
         var y = position.position_y;
+        var notYetWin = true;
             // stop timer
         clearInterval(count);
 
@@ -185,31 +187,93 @@ data_room.once("value", function(snapshot) {
                 document.getElementById("matchTurn").value = "1";
             }
             rows[x] = cols;
+
+                // Check WIN
+            var board_type = document.getElementById("board_type").value *1;
+            var amount_to_win;
+            if(board_type <= 5)
+            {
+                amount_to_win = 3;
+            }
+            else
+            {
+                amount_to_win = 5;
+            }
+            var positionList = CheckWin(rows, x, y, amount_to_win);
+            if(positionList.length != 1)
+            {console.log(positionList);
+                    // WIN
+                notYetWin = false;
+                var user_key = document.getElementById("user_key").value;
+                if(user_key == boss_room)
+                {
+                    var time = document.getElementById("time").value *1;
+                    var withComputer = document.getElementById("withComputer");
+                    var type, winner;
+                    if(withComputer.checked)
+                    {
+                        type = 0;
+                    }
+                    else
+                    {
+                        type = 1;
+                    }
+
+                    if(position.flag_type == "x")
+                    {
+                        winner = document.getElementById("user1").value;
+                    }
+                    else
+                    {
+                        winner = document.getElementById("user2").value;
+                    }
+                    d = new Date();
+                    var time_done = d.getFullYear() +"-"+ (d.getMonth()*1+1) +"-"+ d.getDate() +" "+ d.getHours() +":"+ d.getMinutes() +":"+ d.getSeconds();
+                    data = {
+                        "winner": winner,
+                        "board_type": board_type,
+                        "type": type,
+                        "time_of_a_turn": time,
+                        "time_done": time_done
+                    }
+                    firebase.database().ref("boards").child(board_key).child("detail").update(data);
+                }
+                var i;
+                for(i=0; i<positionList.length; i++)
+                {
+                    x = positionList[i][0];
+                    y = positionList[i][1];
+                    document.getElementById("pos"+ x +"_"+ y).style.backgroundColor = "yellow";
+                }                
+            }
         }
 
-            // Set matchTurn
-        if(position.flag_type == "x")
+        if( notYetWin )
         {
-            document.getElementById("matchTurn").value = "2";
-        }
-        else
-        {
-            document.getElementById("matchTurn").value = "1";
-        }
+                // Set matchTurn
+            if(position.flag_type == "x")
+            {
+                document.getElementById("matchTurn").value = "2";
+            }
+            else
+            {
+                document.getElementById("matchTurn").value = "1";
+            }
 
-            // Add class="turning" for user
-        user1 = document.getElementById("user1").value;
-        user2 = document.getElementById("user2").value;
-        user_key = document.getElementById("user_key").value;
-        matchTurn = document.getElementById("matchTurn").value;
-        if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
-        {
-            document.getElementById("positionsTable").classList.add("turning");
-        }
+                // Add class="turning" for user
+            var user1 = document.getElementById("user1").value;
+            var user2 = document.getElementById("user2").value;
+            var user_key = document.getElementById("user_key").value;
+            var matchTurn = document.getElementById("matchTurn").value;
+            if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
+            {
+                document.getElementById("positionsTable").classList.add("turning");
+            }
 
-            // Run timer
-        time = document.getElementById("time").value *1;
-        RunTimer(time);
+                // Run timer
+            var time = document.getElementById("time").value *1;
+            RunTimer(time);
+        }        
     });
 });
 
