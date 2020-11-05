@@ -146,12 +146,12 @@ def CreateRoom(request):
         # Create room
     data = {
         "boss_room": uid,
-        "amount_of_message": 0,
-        "board_type": 5,
-        "type": 1,
-        "time_of_a_turn": 10,
         "board": board.get("name"),
-        "match_turn": 1
+        "rules": {
+            "board_type": 5,
+            "type": 1,
+            "time_of_a_turn": 10
+        }  
     }
     room = database.child("rooms").push(data)
         # room = {"name": "<key>"}

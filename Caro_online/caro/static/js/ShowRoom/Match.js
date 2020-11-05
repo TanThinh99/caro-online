@@ -34,14 +34,29 @@ data_room_person.on("value", function(snapshot) {
 });
 
 
-room_key = document.getElementById("room_key").value;
-var board_key;
-var data_room = firebase.database().ref("rooms").child(room_key)
-data_room.once("value", function(snapshot) {
-    room = snapshot.val();
-    board_key = room.board;
+    // Update board_key when create new board
+var data_board_of_room = firebase.database().ref("rooms").child(room_key).child("board");
+data_board_of_room.on("value", function(snapshot) {
+    board_key = snapshot.val();
+    document.getElementById("board_key").value = board_key;
+    
+    // Reset temp value
+    document.getElementById("setRuleBtn").disabled = false;
+    document.getElementById("readyBtn").disabled = false;
+    document.getElementById("notReadyBtn").disabled = true;
+    document.getElementById("countTime").innerHTML = "";
+    document.getElementById("matchTurn").value = "1";
+    document.getElementById("matchStarted").value = "0";
+    document.getElementById("isPlayer").value = "0";
+    document.getElementById("user1").value = "";
+    document.getElementById("user2").value = "";
 
-    // Run when detail in board changed
+    ControlBoard(board_key);
+});
+
+function ControlBoard(board_key)
+{
+        // Run when detail in board changed
     var data_board = firebase.database().ref("boards").child(board_key).child("detail");
     data_board.on("value", function(snapshot) {
         var board_detail = snapshot.val();
@@ -64,8 +79,8 @@ data_room.once("value", function(snapshot) {
         {
             document.getElementById("player2").innerHTML = "#2";
         }
-        
-            // Check user1 and user2 are not empty, the match will start
+
+            // Check user1 and user2 are not empty, and winner is empty, the match will start
         var matchStarted = document.getElementById("matchStarted").value;
         if((board_detail.user1 != "") && (board_detail.user2 != "") && (matchStarted == "0"))
         {
@@ -155,127 +170,142 @@ data_room.once("value", function(snapshot) {
                     RunTimer(time);
                 }
             }, 1000);
-        }
-    });
 
-        // Run whenever user choose position or out of time
-    var boss_room = room.boss_room;
-    var data_position_board = firebase.database().ref("boards").child(board_key).child("positions");
-    data_position_board.on("child_added", function(snapshot) {
-        var position = snapshot.val();
-        var x = position.position_x;
-        var y = position.position_y;
-        var notYetWin = true;
-            // stop timer
-        clearInterval(count);
+                // Run whenever user choose position or out of time
+            var boss_room = room.boss_room;
+            var data_position_board = firebase.database().ref("boards").child(board_key).child("positions");
+            data_position_board.on("child_added", function(snapshot) {
+                var position = snapshot.val();
+                var x = position.position_x;
+                var y = position.position_y;
+                var notYetWin = true;
+                    // stop timer
+                clearInterval(count);
 
-            // check x, x == 0, turns ago is out of time, we no work
-        if(x != 0)
-        {
-                // Set background-image (x or y) for position, and set value for matrix
-            var cols = rows[x];
-            if(position.flag_type == "x")
-            {
-                document.getElementById("pos"+ x +"_"+ y).classList.add("x");
-                cols[y] = 1;
-                document.getElementById("matchTurn").value = "2";
-            }
-            else
-            {
-                document.getElementById("pos"+ x +"_"+ y).classList.add("o");
-                cols[y] = 0;
-                document.getElementById("matchTurn").value = "1";
-            }
-            rows[x] = cols;
-
-                // Check WIN
-            var board_type = document.getElementById("board_type").value *1;
-            var amount_to_win;
-            if(board_type <= 5)
-            {
-                amount_to_win = 3;
-            }
-            else
-            {
-                amount_to_win = 5;
-            }
-            var positionList = CheckWin(rows, x, y, amount_to_win);
-            if(positionList.length != 1)
-            {console.log(positionList);
-                    // WIN
-                notYetWin = false;
-                var user_key = document.getElementById("user_key").value;
-                if(user_key == boss_room)
+                    // check x, x == 0, turns ago is out of time, we no work
+                if(x != 0)
                 {
-                    var time = document.getElementById("time").value *1;
-                    var withComputer = document.getElementById("withComputer");
-                    var type, winner;
-                    if(withComputer.checked)
-                    {
-                        type = 0;
-                    }
-                    else
-                    {
-                        type = 1;
-                    }
-
+                        // Set background-image (x or y) for position, and set value for matrix
+                    var cols = rows[x];
                     if(position.flag_type == "x")
                     {
-                        winner = document.getElementById("user1").value;
+                        document.getElementById("pos"+ x +"_"+ y).classList.add("x");
+                        cols[y] = 1;
+                        document.getElementById("matchTurn").value = "2";
                     }
                     else
                     {
-                        winner = document.getElementById("user2").value;
+                        document.getElementById("pos"+ x +"_"+ y).classList.add("o");
+                        cols[y] = 0;
+                        document.getElementById("matchTurn").value = "1";
                     }
-                    d = new Date();
-                    var time_done = d.getFullYear() +"-"+ (d.getMonth()*1+1) +"-"+ d.getDate() +" "+ d.getHours() +":"+ d.getMinutes() +":"+ d.getSeconds();
-                    data = {
-                        "winner": winner,
-                        "board_type": board_type,
-                        "type": type,
-                        "time_of_a_turn": time,
-                        "time_done": time_done
+                    rows[x] = cols;
+
+                        // Check WIN
+                    var board_type = document.getElementById("board_type").value *1;
+                    var amount_to_win;
+                    if(board_type <= 5)
+                    {
+                        amount_to_win = board_type;
                     }
-                    firebase.database().ref("boards").child(board_key).child("detail").update(data);
+                    else
+                    {
+                        amount_to_win = 5;
+                    }
+                    var positionList = CheckWin(rows, x, y, amount_to_win);
+                    if(positionList.length != 1)
+                    {
+                            // WIN
+                        notYetWin = false;
+                        var i;
+                        for(i=0; i<positionList.length; i++)
+                        {
+                            x = positionList[i][0];
+                            y = positionList[i][1];
+                            document.getElementById("pos"+ x +"_"+ y).style.backgroundColor = "yellow";
+                        }
+
+                        var user_key = document.getElementById("user_key").value;
+                        if(user_key == boss_room)
+                        {
+                            var time = document.getElementById("time").value *1;
+                            var withComputer = document.getElementById("withComputer");
+                            var type, winner;
+                            if(withComputer.checked)
+                            {
+                                type = 0;
+                            }
+                            else
+                            {
+                                type = 1;
+                            }
+
+                            if(position.flag_type == "x")
+                            {
+                                winner = document.getElementById("user1").value;
+                            }
+                            else
+                            {
+                                winner = document.getElementById("user2").value;
+                            }
+                            d = new Date();
+                            var time_done = d.getFullYear() +"-"+ (d.getMonth()*1+1) +"-"+ d.getDate() +" "+ d.getHours() +":"+ d.getMinutes() +":"+ d.getSeconds();
+                            data = {
+                                "winner": winner,
+                                "board_type": board_type,
+                                "type": type,
+                                "time_of_a_turn": time,
+                                "time_done": time_done
+                            }
+                            firebase.database().ref("boards").child(board_key).child("detail").update(data);
+                        
+                                // Create new board
+                            data = {
+                                "detail": {
+                                    "user1": "",
+                                    "user2": ""
+                                }
+                            };
+                            board = firebase.database().ref("boards").push(data);
+                            board_key = board.path.o["1"];
+                            data = {
+                                "board": board_key
+                            }
+                            firebase.database().ref("rooms").child(room_key).update(data);
+                        }                          
+                    }
                 }
-                var i;
-                for(i=0; i<positionList.length; i++)
+
+                if( notYetWin )
                 {
-                    x = positionList[i][0];
-                    y = positionList[i][1];
-                    document.getElementById("pos"+ x +"_"+ y).style.backgroundColor = "yellow";
-                }                
-            }
+                        // Set matchTurn
+                    if(position.flag_type == "x")
+                    {
+                        document.getElementById("matchTurn").value = "2";
+                    }
+                    else
+                    {
+                        document.getElementById("matchTurn").value = "1";
+                    }
+
+                        // Add class="turning" for user
+                    var user1 = document.getElementById("user1").value;
+                    var user2 = document.getElementById("user2").value;
+                    var user_key = document.getElementById("user_key").value;
+                    var matchTurn = document.getElementById("matchTurn").value;
+                    if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
+                    {
+                        document.getElementById("positionsTable").classList.add("turning");
+                    }
+
+                        // Run timer
+                    var time = document.getElementById("time").value *1;
+                    RunTimer(time);
+                }        
+            }); 
         }
-
-        if( notYetWin )
-        {
-                // Set matchTurn
-            if(position.flag_type == "x")
-            {
-                document.getElementById("matchTurn").value = "2";
-            }
-            else
-            {
-                document.getElementById("matchTurn").value = "1";
-            }
-
-                // Add class="turning" for user
-            var user1 = document.getElementById("user1").value;
-            var user2 = document.getElementById("user2").value;
-            var user_key = document.getElementById("user_key").value;
-            var matchTurn = document.getElementById("matchTurn").value;
-            if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
-            {
-                document.getElementById("positionsTable").classList.add("turning");
-            }
-
-                // Run timer
-            var time = document.getElementById("time").value *1;
-            RunTimer(time);
-        }        
     });
-});
+}
 
 
 // Clock uses to run timer
@@ -307,6 +337,7 @@ readyBtn.onclick = function() {
     document.getElementById("readyState").value = "1";
         
         // Check user1, user2
+    board_key = document.getElementById("board_key").value;
     data_board = firebase.database().ref("boards").child(board_key).child("detail");
     data_board.once("value", function(snapshot) {
         board_detail = snapshot.val();
@@ -333,6 +364,7 @@ notReadyBtn.onclick = function() {
     document.getElementById("readyState").value = "0";
     
         // user leave this board
+    board_key = document.getElementById("board_key").value;
     data_board = firebase.database().ref("boards").child(board_key).child("detail");
     data_board.once("value", function(snapshot) {
         board_detail = snapshot.val();
@@ -360,6 +392,7 @@ function CheckReadyState()
     if(state == "1")
     {
             // Delete this user in board
+        board_key = document.getElementById("board_key").value;
         data_board = firebase.database().ref("boards").child(board_key).child("detail");
         data_board.once("value", function(snapshot) {
             board_detail = snapshot.val();
@@ -430,6 +463,7 @@ function ChoosePosition(x, y)
                 "position_x": x,
                 "position_y": y
             }
+            board_key = document.getElementById("board_key").value;
             firebase.database().ref("boards").child(board_key).child("positions").push(data)
         }        
     }    

@@ -13,6 +13,7 @@
 <body style="width: 100%;" onbeforeunload="return CheckReadyState()">
     <p>&nbsp;<a href="{% url 'Leave_room' room_person_key %}" id="leaveRoomLink">&lt;&lt;Leave room</a></p>
     <input type="hidden" id="room_key" value="{{ room_key }}">
+    <input type="hidden" id="board_key" value="">
     <input type="hidden" id="user_key" value="{{ user_uid }}">
     <input type="hidden" id="isPlayer" value="0">
     <input type="hidden" id="matchStarted" value="0">
