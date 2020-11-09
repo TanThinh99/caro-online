@@ -77,37 +77,54 @@ document.getElementById("setRuleBtn").onclick = function() {
     alert("Setting rule successful");
 }
 
-room_key = document.getElementById("room_key").value;
-data_rule_room = firebase.database().ref("rooms").child(room_key).child("rules");
-data_rule_room.on("value", function(snapshot) {
-    rules = snapshot.val();
-        
-        // board_type
-    board_type = rules.board_type;
-    document.getElementById("board_type").value = board_type;
-    str = "<table border='1'>";
-    for(i=0; i<board_type; i++)
-    {
-        str += "<tr>";
-        for(j=0; j<board_type; j++)
+var room_key = document.getElementById("room_key").value;
+var data_boss_room = firebase.database().ref("rooms").child(room_key).child("boss_room");
+data_boss_room.once("value", function(snapshot) {
+    var boss_room = snapshot.val();
+
+    data_rule_room = firebase.database().ref("rooms").child(room_key).child("rules");
+    data_rule_room.on("value", function(snapshot) {
+        rules = snapshot.val();
+            
+            // board_type
+        board_type = rules.board_type;
+        document.getElementById("board_type").value = board_type;
+        str = "<table border='1'>";
+        for(i=0; i<board_type; i++)
         {
-            str += "<td>&nbsp;</td>";
+            str += "<tr>";
+            for(j=0; j<board_type; j++)
+            {
+                str += "<td>&nbsp;</td>";
+            }
+            str += "</tr>"
         }
-        str += "</tr>"
-    }
-    str += "</table>";
-    document.getElementById("board").innerHTML = str;
-        
-        // type
-    if(rules.type == 0)
-    {
-        document.getElementById("withComputer").click();
-    }
-    else if(rules.type == 1)
-    {
-        document.getElementById("withPlayer").click();
-    }
-   
-        // time
-    document.getElementById("time").value = rules.time_of_a_turn;
+        str += "</table>";
+        document.getElementById("board").innerHTML = str;
+            
+            // type
+        if(rules.type == 0)
+        {
+            document.getElementById("withComputer").click();
+
+            user_key = document.getElementById("user_key").value;
+            if(user_key != boss_room)
+            {
+                document.getElementById("readyBtn").disabled = true;
+            }
+            document.getElementById("player2").innerHTML = "#2 Computer";
+            data = {
+                "user2": "Computer"
+            }
+            board_key = document.getElementById("board_key").value;
+            firebase.database().ref("boards").child(board_key).child("detail").update(data);
+        }
+        else if(rules.type == 1)
+        {
+            document.getElementById("withPlayer").click();
+        }
+    
+            // time
+        document.getElementById("time").value = rules.time_of_a_turn;
+    });
 });

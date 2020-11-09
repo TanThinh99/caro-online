@@ -80,7 +80,7 @@ function ControlBoard(board_key)
             document.getElementById("player2").innerHTML = "#2";
         }
 
-            // Check user1 and user2 are not empty, and winner is empty, the match will start
+            // Check user1 and user2 are not empty, the match will start
         var matchStarted = document.getElementById("matchStarted").value;
         if((board_detail.user1 != "") && (board_detail.user2 != "") && (matchStarted == "0"))
         {
@@ -183,6 +183,7 @@ function ControlBoard(board_key)
                 clearInterval(count);
 
                     // check x, x == 0, turns ago is out of time, we no work
+                var amount_to_win;
                 if(x != 0)
                 {
                         // Set background-image (x or y) for position, and set value for matrix
@@ -203,7 +204,6 @@ function ControlBoard(board_key)
 
                         // Check WIN
                     var board_type = document.getElementById("board_type").value *1;
-                    var amount_to_win;
                     if(board_type <= 5)
                     {
                         amount_to_win = board_type;
@@ -213,24 +213,27 @@ function ControlBoard(board_key)
                         amount_to_win = 5;
                     }
                     var positionList = CheckWin(rows, x, y, amount_to_win);
-                    if(positionList.length != 1)
+                        // length == 0 is NOT RESULT, == 1 is TIE, > 1 is WIN
+                    if(positionList.length != 0)
                     {
                             // WIN
                         notYetWin = false;
-                        var i;
-                        for(i=0; i<positionList.length; i++)
+                        if(positionList.length > 1)
                         {
-                            x = positionList[i][0];
-                            y = positionList[i][1];
-                            document.getElementById("pos"+ x +"_"+ y).style.backgroundColor = "yellow";
+                            var i;
+                            for(i=0; i<positionList.length; i++)
+                            {
+                                x = positionList[i][0];
+                                y = positionList[i][1];
+                                document.getElementById("pos"+ x +"_"+ y).style.backgroundColor = "yellow";
+                            }
                         }
-
                         var user_key = document.getElementById("user_key").value;
                         if(user_key == boss_room)
                         {
                             var time = document.getElementById("time").value *1;
                             var withComputer = document.getElementById("withComputer");
-                            var type, winner;
+                            var type, winner = "";
                             if(withComputer.checked)
                             {
                                 type = 0;
@@ -239,15 +242,17 @@ function ControlBoard(board_key)
                             {
                                 type = 1;
                             }
-
-                            if(position.flag_type == "x")
+                            if(positionList.length > 1)
                             {
-                                winner = document.getElementById("user1").value;
-                            }
-                            else
-                            {
-                                winner = document.getElementById("user2").value;
-                            }
+                                if(position.flag_type == "x")
+                                {
+                                    winner = document.getElementById("user1").value;
+                                }
+                                else
+                                {
+                                    winner = document.getElementById("user2").value;
+                                }
+                            }                            
                             d = new Date();
                             var time_done = d.getFullYear() +"-"+ (d.getMonth()*1+1) +"-"+ d.getDate() +" "+ d.getHours() +":"+ d.getMinutes() +":"+ d.getSeconds();
                             data = {
@@ -259,11 +264,19 @@ function ControlBoard(board_key)
                             }
                             firebase.database().ref("boards").child(board_key).child("detail").update(data);
                         
+                            // Check match wth computer
+                            var user2 = ""
+                            withComputer = document.getElementById("withComputer");
+                            if(withComputer.checked)
+                            {
+                                user2 = "Computer";
+                            }
+
                                 // Create new board
                             data = {
                                 "detail": {
                                     "user1": "",
-                                    "user2": ""
+                                    "user2": user2
                                 }
                             };
                             board = firebase.database().ref("boards").push(data);
@@ -301,10 +314,50 @@ function ControlBoard(board_key)
                         // Run timer
                     var time = document.getElementById("time").value *1;
                     RunTimer(time);
+
+                        // Computer choose a position
+                    var user_key = document.getElementById("user_key").value;
+                    var matchTurn = document.getElementById("matchTurn").value;
+                    if((user_key == boss_room) && (user2 == "Computer") && (matchTurn == "2"))
+                    {
+                        var str = RunCutBranchAB(amount_to_win);
+                        var temp = str.indexOf("_");
+                        var x = str.substring(0, temp) *1;
+                        var y = str.substring(temp + 1) *1;
+                        ChoosePosition(x, y);
+                    }
                 }        
             }); 
         }
     });
+}
+
+
+function RunCutBranchAB(amount_to_win)
+{
+        // Run empty positionin rows
+    var i, j, position, vp = -999;
+    for(i=1; i <= rows.length - 1; i++)
+    {
+        for(j=1; j <= rows[1].length - 1; j++)
+        {
+            if(rows[i][j] == -1)
+            {
+                // Máy là cờ O, Người là cờ X     
+                // MAX là O đi, MIN là X đi
+                var str = CutBranchAB(rows, "MIN", vp, amount_to_win, i, j);
+                console.log(str);
+                var vq = Get_Vq(str);
+                if(vq > vp)
+                {
+                    vp = vq;
+                    var temp = str.indexOf("_");
+                    position = str.substring(temp + 1);
+                }
+            }
+        }
+    }                        
+    return position;
 }
 
 
@@ -421,7 +474,7 @@ function ChoosePosition(x, y)
     var user_key = document.getElementById("user_key").value;
     var user1 = document.getElementById("user1").value;
     var user2 = document.getElementById("user2").value;
-    if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
+    if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key) || (matchTurn == "2" && user2 == "Computer"))
     {
             // Check (that position is empty?) or (x=0, y=0 => This is out of time)
         var pass = true;

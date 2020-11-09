@@ -23,6 +23,7 @@ data_rooms.on("value", function(snapshot) {
             }
             str += "Boss name: "+ name +"<br>";
             str += "Board type: "+ rooms[key].board_type +"x"+ rooms[key].board_type +"<br>";
+            var temp;
             if(rooms[key].type == 0)
             {
                 temp = "Match with the computer";
