@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match</title>
+    <link rel="stylesheet" href="css/Match.css">
+</head>
+<body>
+    <div class="main">
+        <div class="left">
+            <div class="board"></div>
+            <div class="underBoard">
+                <div class="buttonsOfBoard">
+                    <a href="#" id="readyBtn">Ready</a>
+                    <a href="#" id="notReadyBtn">Not ready</a>
+                    <a href="#" id="leaveRoomBtn">Thoát</a>
+                </div>
+                <div class="infoPlayer">
+                    <div class="player">
+                        <div class="playerName">
+                            #1 Le Thanh Phong
+                        </div>
+                        <div class="time">
+                            3 seconds
+                        </div>
+                    </div>
+                    <div class="player">
+                        <div class="playerName">
+                            #2 Le Thanh Phong
+                        </div>
+                        <div class="time">
+                            3 seconds
+                        </div>
+                    </div>
+                </div>
+            </div>            
+        </div>
+        <div class="right">
+            <div class="rules">
+                <h3 class="ruleTitle">RULES</h3>
+                <label for="board_type">Board type</label><br>
+                <select name="board_type" id="board_type">
+                    <option value="">Choose type</option>
+                    <option value="3">3x3</option>
+                    <option value="4">4x4</option>
+                    <option value="5">5x5</option>
+                    <option value="6">6x6</option>
+                    <option value="7">7x7</option>
+                    <option value="8">8x8</option>
+                </select><br><br>
+                
+                <label>Match type</label><br>
+                <input type="radio" name="match_type" id="withComputer" value="0">
+                <label for="withComputer">Match with computer</label><br>
+                <input type="radio" name="match_type" id="withPlayer" value="1">
+                <label for="withPlayer">Match with player</label>
+                <br><br>
+
+                <label for="pass1">Time of a turn</label><br>
+                <input type="number" name="time" id="time" min="5" max="90"> (seconds)<br><br>
+
+                <a href="#" id="setRuleBtn">Set rules</a>
+            </div>
+            <div class="infoRoom">
+                <div class="infoRoom-navi">
+                    <a class="infoRoomItem" onclick="ChooseInfoRoom('chat')">Chat</a>
+                    <a class="infoRoomItem" onclick="ChooseInfoRoom('member')">Member</a>
+                </div>
+                <div id="chatContent">
+                    <div class="content">
+                        <div class="item">
+                            Nguyen Van A: hello
+                        </div>
+                        <div class="item">
+                            Nguyen Van A: hello
+                        </div>
+                        <div class="item">
+                            Nguyen Van A: hello
+                        </div>
+                        <div class="item">
+                            Nguyen Van A: hello
+                        </div>
+                        <div class="item">
+                            Nguyen Van A: hello
+                        </div>
+                        <div class="item">
+                            Nguyen Van A: hello
+                        </div>
+                        <div class="item">
+                            Nguyen Van A: hello
+                        </div>
+                        <div class="item">
+                            Nguyen Van A: hello 5555555555 bfdbfd nfdd
+                        </div>
+                    </div>
+                    <div>
+                        <input type="text" id="message">
+                        <a href="#" id="sendBtn">Send</a>
+                    </div>
+                </div>
+                <div id="member">
+                    <div class="memberItem">
+                        ndkdjskjdfjsdkfd
+                    </div>
+                    <div class="memberItem">
+                        ndkdjskjdfjsdkfd
+                    </div>
+                    <div class="memberItem">
+                        ndkdjskjdfjsdkfd
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/Match.js"></script>
+</body>
+</html>

@@ -42,7 +42,15 @@ data_board_of_room.on("value", function(snapshot) {
     
     // Reset temp value
     document.getElementById("setRuleBtn").disabled = false;
-    document.getElementById("readyBtn").disabled = false;
+    var withComputer = document.getElementById("withComputer");
+    if(withComputer.checked && withComputer.disabled)
+    {
+        document.getElementById("readyBtn").disabled = true;    
+    }
+    else
+    {
+        document.getElementById("readyBtn").disabled = false;
+    }
     document.getElementById("notReadyBtn").disabled = true;
     document.getElementById("countTime").innerHTML = "";
     document.getElementById("matchTurn").value = "1";
@@ -133,7 +141,7 @@ function ControlBoard(board_key)
                     }
                     else if(isPlayer == "0")
                     {
-                        str += "<td></td>";
+                        str += "<td id='pos"+ i +"_"+ j +"'></td>";
                     }
                 }
                 str += "</tr>";
@@ -264,7 +272,7 @@ function ControlBoard(board_key)
                             }
                             firebase.database().ref("boards").child(board_key).child("detail").update(data);
                         
-                            // Check match wth computer
+                            // Check match with computer
                             var user2 = ""
                             withComputer = document.getElementById("withComputer");
                             if(withComputer.checked)
@@ -306,7 +314,7 @@ function ControlBoard(board_key)
                     var user2 = document.getElementById("user2").value;
                     var user_key = document.getElementById("user_key").value;
                     var matchTurn = document.getElementById("matchTurn").value;
-                    if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key))
+                    if((matchTurn == "1" && user1 == user_key) || (matchTurn == "2" && user2 == user_key) || (matchTurn == "2" && user2 == "Computer"))
                     {
                         document.getElementById("positionsTable").classList.add("turning");
                     }
@@ -318,7 +326,7 @@ function ControlBoard(board_key)
                         // Computer choose a position
                     var user_key = document.getElementById("user_key").value;
                     var matchTurn = document.getElementById("matchTurn").value;
-                    if((user_key == boss_room) && (user2 == "Computer") && (matchTurn == "2"))
+                    if((user2 == "Computer") && (matchTurn == "2")) //(user_key == boss_room) && 
                     {
                         var str = RunCutBranchAB(amount_to_win);
                         var temp = str.indexOf("_");

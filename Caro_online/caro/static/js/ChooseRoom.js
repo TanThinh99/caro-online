@@ -22,18 +22,18 @@ data_rooms.on("value", function(snapshot) {
                 name = rooms[key].boss_room;
             }
             str += "Boss name: "+ name +"<br>";
-            str += "Board type: "+ rooms[key].board_type +"x"+ rooms[key].board_type +"<br>";
+            str += "Board type: "+ rooms[key].rules.board_type +"x"+ rooms[key].rules.board_type +"<br>";
             var temp;
-            if(rooms[key].type == 0)
+            if(rooms[key].rules.type == 0)
             {
                 temp = "Match with the computer";
             }
-            else if(rooms[key].type == 1)
+            else if(rooms[key].rules.type == 1)
             {
                 temp = "Match with the player";
             }
             str += "Type: "+ temp +"<br>";
-            str += "Time of a turn: "+ rooms[key].time_of_a_turn;
+            str += "Time of a turn: "+ rooms[key].rules.time_of_a_turn;
         str += "</div>";
     }
     document.getElementById("containRooms").innerHTML = str;

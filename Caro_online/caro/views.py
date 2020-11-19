@@ -63,14 +63,11 @@ def PostRegister(request):
     
     uid = user.get("localId")
     name   = request.POST.get("name")
-    nation = request.POST.get("nation")
-    score = 0
 
     data = {
         "name": name,
         "email": email,
-        "nation": nation,
-        "score": score
+        "score": 0
     }
     database.child("users").child(uid).set(data)
     return redirect("../")

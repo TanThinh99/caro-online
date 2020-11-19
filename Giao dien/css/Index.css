@@ -1,0 +1,54 @@
+html {
+    background-color: #d0cfcf;
+}
+
+body {
+    padding: 24px;
+    width: 84%;
+    margin: auto;
+    background-color: white;
+    background-image: url("../image/unnamed.jpg");
+    background-repeat: repeat-y;
+    background-size: 124% 69%;
+    height: 540px;
+}
+
+.title {
+    text-align: center;
+    font-size: 39px;
+    padding: 35px 0px;
+    background-color: #23eaff8f;
+    border-top: 7px solid brown;
+    border-bottom: 7px solid brown;
+    font-weight: bold;
+    font-family: Garamond;
+}
+
+.title a {
+    color: black;
+    text-decoration: none;
+}
+
+.welcomeUser {
+    display: block;
+    color:white;
+    font-size: 43px;
+    font-weight: bold;
+    margin-top: 39px;
+}
+
+.function {
+    text-decoration: none;
+    padding: 9px 20px;
+    background-color: #f7ff00;
+    color: black;
+    border-radius: 3px;
+    margin-right: 10px;
+    margin-top: 44px;
+    display: inline-block;
+    transition: 0.3s;
+}
+
+.function:hover {
+    box-shadow: 2px 2px 5px 3px #ffcb00;
+}

@@ -103,27 +103,34 @@ data_boss_room.once("value", function(snapshot) {
         document.getElementById("board").innerHTML = str;
             
             // type
+        var username2 = "";
+        var player2 = "";
         if(rules.type == 0)
         {
-            document.getElementById("withComputer").click();
+            document.getElementById("withComputer").checked = true;
 
             user_key = document.getElementById("user_key").value;
             if(user_key != boss_room)
             {
                 document.getElementById("readyBtn").disabled = true;
             }
-            document.getElementById("player2").innerHTML = "#2 Computer";
-            data = {
-                "user2": "Computer"
-            }
-            board_key = document.getElementById("board_key").value;
-            firebase.database().ref("boards").child(board_key).child("detail").update(data);
+            player2 = "#2 Computer";
+            username2 = "Computer";
         }
         else if(rules.type == 1)
         {
-            document.getElementById("withPlayer").click();
+            document.getElementById("withPlayer").checked = true;
+            document.getElementById("readyBtn").disabled = false;
+            player2 = "#2";
+            username2 = "";
         }
-    
+        document.getElementById("player2").innerHTML = player2;
+        data = {
+            "user2": username2
+        }
+        board_key = document.getElementById("board_key").value;
+        firebase.database().ref("boards").child(board_key).child("detail").update(data);
+
             // time
         document.getElementById("time").value = rules.time_of_a_turn;
     });

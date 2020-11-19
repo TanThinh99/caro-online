@@ -1,0 +1,39 @@
+#createRoomBtn {
+  padding: 9px 0px;
+  background-color: #ffaa4f;
+  width: 155px;
+  border-radius: 3px;
+  text-align: center;
+  transition: 0.4s;
+  margin-bottom: 10px;
+}
+
+#createRoomBtn:hover {
+  box-shadow: 2px 2px 3px 4px #ff4800;
+}
+
+.rooms {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  height: 345px;
+}
+
+.room-item {
+  width: 209px;
+  padding: 7px 7px 7px 12px;
+  border: 3px solid #ff5c5c;
+  border-radius: 3px;
+  margin: 10px 10px 10px 10px;
+  background-color: #fff;
+  height: 88px;
+  transition: 0.4s;
+}
+
+.room-item:hover {
+  box-shadow: 0px 1px 4px 6px #ff7f4c;
+}
+
+.room-item div {
+  line-height: 1.3;
+}

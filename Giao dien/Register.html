@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Room</title>
+    <link rel="stylesheet" href="css/Index.css">
+    <link rel="stylesheet" href="css/Register.css">
+</head>
+<body>
+    <div class="title"><a href="#">Welcome to Gomoku</a></div>
+    <div class="loginFrame">
+        <form action="" method="post">
+            <label for="name">Name</label><br>
+            <input type="text" name="name" id="name" required><br>
+
+            <label for="email">Email</label><br>
+            <input type="email" name="email" id="email" required><br>
+
+            <label for="pass1">Password</label><br>
+            <input type="password" name="pass1" id="pass1" required><br>
+
+            <label for="pass2">Confirm Password</label><br>
+            <input type="password" name="pass2" id="pass2"><br>
+
+            <input type="submit" value="Register" id="submitBtn" onclick="return CheckPassword()">
+            <input type="reset" value="Reset" id="resetBtn">
+        </form>
+    </div>
+</body>
+<script>
+    function CheckPassword()
+    {
+        pass1 = document.getElementById("pass1").value;
+        pass2 = document.getElementById("pass2").value;
+        if(pass1 != pass2)
+        {
+            alert("Confirm password must match !!");
+            return false;
+        }
+        return true;
+    }
+</script>
+</html>
