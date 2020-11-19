@@ -28,9 +28,9 @@ data_room_person.on("value", function(snapshot) {
     {
         user_key = data[key].user;
         name = GetUserName(user_key);
-        str += "<p>"+ name +"</p>";
+        str += "<div class='memberItem'>"+ name +"</div>";
     }
-    document.getElementById("containPersons").innerHTML = str;
+    document.getElementById("member").innerHTML = str;
 });
 
 
@@ -528,4 +528,24 @@ function ChoosePosition(x, y)
             firebase.database().ref("boards").child(board_key).child("positions").push(data)
         }        
     }    
+}
+
+    // Choose ChatContent or Member
+function ChooseInfoRoom(type)
+{
+    var chat = document.getElementById("chatContent");
+    var member = document.getElementById("member");
+    
+        // display: none
+    chat.style.display = "none";
+    member.style.display = "none";
+
+    if(type == "chat")
+    {
+        chat.style.display = "block";
+    }
+    else if(type == "member")
+    {
+        member.style.display = "block";
+    }
 }

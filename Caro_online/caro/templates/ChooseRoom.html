@@ -1,20 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Gomoku</title>
+{% extends 'Base.html' %}
 
-    {% load static %}
+{% block title %}Choose Room{% endblock %}
+
+{% load static %}
+
+{% block linkHead %}
     <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
     <script src="{% static 'js/firebase_config.js' %}"></script>
-</head>
-<body>
-    <h1>Gomoku Rooms</h1>
-    <a href="{% url 'Index' %}">&lt;&lt;Go to main page</a> | 
-    <a href="{% url 'Create_room' %}">Create room</a>
-    <div id="containRooms"></div>
+
+    <link rel="stylesheet" href="{% static 'css/ChooseRoom.css' %}">
+{% endblock %}
+
+{% block content %}
+    <br>
+    <a href="{% url 'Create_room' %}" id="createRoomBtn">Create a new room</a>
+    <div id="rooms"></div>
     <input type="hidden" id="user" value="{{ user_uid }}">
-</body>
-<script src="{% static 'js/ChooseRoom.js' %}"></script>
-</html>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/ChooseRoom.js' %}"></script>
+{% endblock %}

@@ -15,14 +15,14 @@ data_rooms.on("value", function(snapshot) {
     str = "";
     for(key in rooms)
     {
-        str += "<div style='border: 1px dashed red; margin: 7px; padding: 7px;' onclick='EnterRoom(\""+ user +"\", \""+ key +"\")'>";
+        str += "<div class='room-item' onclick='EnterRoom(\""+ user +"\", \""+ key +"\")'>";
             name = userList[rooms[key].boss_room];
             if(name == "undefined")
             {
                 name = rooms[key].boss_room;
             }
-            str += "Boss name: "+ name +"<br>";
-            str += "Board type: "+ rooms[key].rules.board_type +"x"+ rooms[key].rules.board_type +"<br>";
+            str += "<div>Boss name: "+ name +"</div>";
+            str += "<div>Board type: "+ rooms[key].rules.board_type +"x"+ rooms[key].rules.board_type +"</div>";
             var temp;
             if(rooms[key].rules.type == 0)
             {
@@ -32,11 +32,11 @@ data_rooms.on("value", function(snapshot) {
             {
                 temp = "Match with the player";
             }
-            str += "Type: "+ temp +"<br>";
-            str += "Time of a turn: "+ rooms[key].rules.time_of_a_turn;
+            str += "<div>Type: "+ temp +"</div>";
+            str += "<div>Time of a turn: "+ rooms[key].rules.time_of_a_turn +"</div>";
         str += "</div>";
     }
-    document.getElementById("containRooms").innerHTML = str;
+    document.getElementById("rooms").innerHTML = str;
 });
 
 function EnterRoom(user, room)

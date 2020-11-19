@@ -1,0 +1,51 @@
+.loginFrame {
+  margin: 55px auto;
+  display: block;
+  width: 300px;
+  border: 7px solid #aeadad;
+  background-color: #f9f9f9;
+  padding: 29px 9px;
+  border-radius: 6px;
+}
+
+.loginFrame form {
+  width: 80%;
+  margin: auto 57px;
+}
+
+.loginFrame form label {
+  margin: 6px auto -8px auto;
+  display: block;
+  font-size: 18px;
+}
+
+.loginFrame form input[type=email], input[type=password] {
+  font-size: 16px;
+  width: 82%;
+  margin-bottom: 9px;
+}
+
+#submitBtn, #resetBtn {
+  padding: 10px 24px;
+  margin: 14px 14px auto auto; 
+  border-width: 1px;
+  transition: 0.4s;
+  font-size: 15px;
+  border-radius: 4px;
+}
+
+#submitBtn {
+  background-color: #4fff4f;
+}
+
+#submitBtn:hover {
+  box-shadow: 2px 2px 3px 3px #6dff38;
+}
+
+#resetBtn {
+  background-color: lightgray;
+}
+
+#resetBtn:hover {
+  box-shadow: 2px 2px 3px 3px #9d9d9d;
+}

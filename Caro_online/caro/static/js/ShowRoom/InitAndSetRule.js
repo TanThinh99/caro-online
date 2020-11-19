@@ -43,6 +43,7 @@ room.once("value", function(snapshot) {
         document.getElementById("withPlayer").disabled = true;
         document.getElementById("time").disabled = true;
         document.getElementById("setRuleBtn").disabled = true;
+        document.getElementById("setRuleBtn").classList.add("disabled");
     }
 });
 
@@ -110,17 +111,17 @@ data_boss_room.once("value", function(snapshot) {
             document.getElementById("withComputer").checked = true;
 
             user_key = document.getElementById("user_key").value;
-            if(user_key != boss_room)
-            {
-                document.getElementById("readyBtn").disabled = true;
-            }
+            // if(user_key != boss_room)
+            // {
+            //     document.getElementById("readyBtn").disabled = true;
+            // }
             player2 = "#2 Computer";
             username2 = "Computer";
         }
         else if(rules.type == 1)
         {
             document.getElementById("withPlayer").checked = true;
-            document.getElementById("readyBtn").disabled = false;
+            // document.getElementById("readyBtn").disabled = false;
             player2 = "#2";
             username2 = "";
         }

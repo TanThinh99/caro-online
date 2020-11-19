@@ -6,6 +6,9 @@
   text-align: center;
   transition: 0.4s;
   margin-bottom: 10px;
+  display: inline-block;
+  text-decoration: none;
+  color: black;
 }
 
 #createRoomBtn:hover {

@@ -62,7 +62,7 @@ def PostRegister(request):
         return redirect("../Register")
     
     uid = user.get("localId")
-    name   = request.POST.get("name")
+    name = request.POST.get("name")
 
     data = {
         "name": name,

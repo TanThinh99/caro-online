@@ -1,20 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Gomoku</title>
-</head>
-<body>
-    <h1>Gomoku</h1>
+{% extends 'Base.html' %}
+
+{% block title %}Welcome to Gomoku{% endblock %}
+
+{% block linkHead %}{% endblock %}
+
+{% block content %}
     {% if name %}
-        Welcome {{ name }}
-        <a href="{% url 'Choose_room' %}">Choose room</a> |
-        <a href="{% url 'Logout' %}">Logout</a>
+        <div class="welcomeUser">Welcome {{ name }}</div>
+        <a href="{% url 'Choose_room' %}" class="function">Choose room</a>
+        <a href="{% url 'Logout' %}" class="function">Logout</a>
     {% else %}
-        <a href="{% url 'Get_login' %}">Login</a> |
-        <a href="{% url 'Get_register' %}">Register</a> |
-        <a href="{% url 'Choose_room' %}">Play without the account</a>
+        <a href="{% url 'Get_login' %}" class="function">Login</a>
+        <a href="{% url 'Get_register' %}" class="function">Register</a>
+        <a href="{% url 'Choose_room' %}" class="function">Play without the account</a>
     {% endif %}
-</body>
-</html>
+{% endblock %}
+
+{% block script %}{% endblock %}

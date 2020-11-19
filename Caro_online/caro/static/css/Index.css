@@ -6,7 +6,7 @@ body {
     padding: 24px;
     width: 84%;
     margin: auto;
-    background-color: #006bff;
+    background-color: white;
     background-image: url("../image/background.jpg");
     background-repeat: repeat-y;
     background-size: 124% 69%;
@@ -31,7 +31,7 @@ body {
 
 .welcomeUser {
     display: block;
-    color:white;
+    color:#006bff;
     font-size: 43px;
     font-weight: bold;
     margin-top: 39px;

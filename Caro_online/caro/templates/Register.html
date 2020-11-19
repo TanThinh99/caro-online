@@ -1,51 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register account</title>
-</head>
-<body>
-    <h1>Register</h1>
-    <form action="{% url 'Post_register' %}" method="post">
-        {% csrf_token %}
+{% extends 'Base.html' %}
 
-        <label for="name">Name</label><br>
-        <input type="text" name="name" id="name" required><br><br>
+{% block title %}Register account{% endblock %}
 
-        <label for="nation">Nation</label><br>
-        <input type="text" name="nation" id="nation" required><br><br>
+{% load static %}
 
-        <label for="email">Email</label><br>
-        <input type="email" name="email" id="email" required><br><br>
+{% block linkHead %}
+    <link rel="stylesheet" href="{% static 'css/Register.css' %}">
+{% endblock %}
 
-        <label for="pass1">Password</label><br>
-        <input type="password" name="pass1" id="pass1" required><br><br>
+{% block content %}
+    <div class="loginFrame">
+        <form action="{% url 'Post_register' %}" method="post">
+            {% csrf_token %}
+            
+            <label for="name">Name</label><br>
+            <input type="text" name="name" id="name" required><br>
 
-        <label for="pass2">Confirm Password</label><br>
-        <input type="password" name="pass2" id="pass2"><br><br>
+            <label for="email">Email</label><br>
+            <input type="email" name="email" id="email" required><br>
 
-        <input type="submit" value="Register" onclick="return CheckPassword()">
-        <input type="reset" value="Reset">
-    </form>
+            <label for="pass1">Password</label><br>
+            <input type="password" name="pass1" id="pass1" required><br>
+
+            <label for="pass2">Confirm Password</label><br>
+            <input type="password" name="pass2" id="pass2"><br>
+
+            <input type="submit" value="Register" id="submitBtn" onclick="return CheckPassword()">
+            <input type="reset" value="Reset" id="resetBtn">
+        </form>
+    </div>
 
     {% if report %}
         <script>
             alert("{{ report }}");
         </script>
     {% endif %}
-</body>
-<script>
-    function CheckPassword()
-    {
-        pass1 = document.getElementById("pass1").value;
-        pass2 = document.getElementById("pass2").value;
-        if(pass1 != pass2)
+{% endblock %}
+
+{% block script %}
+    <script>
+        function CheckPassword()
         {
-            alert("Confirm password must match !!");
-            return false;
+            pass1 = document.getElementById("pass1").value;
+            pass2 = document.getElementById("pass2").value;
+            if(pass1 != pass2)
+            {
+                alert("Confirm password must match !!");
+                return false;
+            }
+            return true;
         }
-        return true;
-    }
-</script>
-</html>
+    </script>
+{% endblock %}

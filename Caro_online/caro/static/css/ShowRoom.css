@@ -1,17 +1,17 @@
-#leftArea {
+/* #leftArea {
     float: left;
     width: 55%;
     border: 1px dashed black;
     margin: 10px;
-}
+} */
 
-#board {         
+/* #board {         
     border: 1px dashed blue;
-}
+} */
 
-#board table{
-    margin: auto;
-}
+/* #board table{
+    margin: 100px auto;
+} */
 
 #board td{
     width: 40px;
@@ -35,7 +35,7 @@
     background-color: rgb(140, 164, 243);
 }
 
-#infoRoom{
+/* #infoRoom{
     float:left;
     margin: 10px;
-}
+} */
