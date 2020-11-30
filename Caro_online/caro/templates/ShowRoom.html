@@ -13,6 +13,7 @@
 <body onbeforeunload="return CheckReadyState()">
     <input type="hidden" id="room_key" value="{{ room_key }}">
     <input type="hidden" id="board_key" value="">
+    <input type="hidden" id="boss_room" value="">
     <input type="hidden" id="user_key" value="{{ user_uid }}">
     <input type="hidden" id="isPlayer" value="0">
     <input type="hidden" id="matchStarted" value="0">
@@ -27,7 +28,7 @@
             <div class="underBoard">
                 <div class="buttonsOfBoard">
                     <button id="readyBtn">Ready</button>
-                    <button id="notReadyBtn" disabled>Not ready</button>
+                    <button id="notReadyBtn">Not ready</button>
                     <input type="hidden" id="readyState" value="0">
                     <a href="{% url 'Leave_room' room_person_key %}" id="leaveRoomBtn">Leave room</a>
                 </div>
@@ -36,17 +37,13 @@
                         <div class="playerName" id="player1">
                             #1
                         </div>
-                        <div class="time">
-                            3 seconds
-                        </div>
+                        <div class="time" id="timeOfPlayer1"></div>
                     </div>
                     <div class="player">
                         <div class="playerName" id="player2">
                             #2
                         </div>
-                        <div class="time">
-                            3 seconds
-                        </div>
+                        <div class="time" id="timeOfPlayer2"></div>
                     </div>
                 </div>
             </div>            
@@ -83,35 +80,10 @@
                     <a class="infoRoomItem" onclick="ChooseInfoRoom('member')">Member</a>
                 </div>
                 <div id="chatContent">
-                    <div class="content">
-                        <div class="item">
-                            Nguyen Van A: hello
-                        </div>
-                        <div class="item">
-                            Nguyen Van A: hello
-                        </div>
-                        <div class="item">
-                            Nguyen Van A: hello
-                        </div>
-                        <div class="item">
-                            Nguyen Van A: hello
-                        </div>
-                        <div class="item">
-                            Nguyen Van A: hello
-                        </div>
-                        <div class="item">
-                            Nguyen Van A: hello
-                        </div>
-                        <div class="item">
-                            Nguyen Van A: hello
-                        </div>
-                        <div class="item">
-                            Nguyen Van A: hello 5555555555 bfdbfd nfdd
-                        </div>
-                    </div>
+                    <div class="content" id="chatBox"></div>
                     <div>
                         <input type="text" id="message">
-                        <a id="sendBtn">Send</a>
+                        <a id="sendBtn" onclick='SendMessage()'>Send</a>
                     </div>
                 </div>
                 <div id="member"></div>
@@ -123,69 +95,3 @@
     <script src="{% static 'js/ShowRoom/Algorithm.js' %}"></script>
 </body>
 </html>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gomoku match</title>
-
-    {% load static %}
-    <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
-    <script src="{% static 'js/firebase_config.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/ShowRoom.css' %}">
-</head>
-<body style="width: 100%;" onbeforeunload="return CheckReadyState()">
-    <p>&nbsp;<a href="{% url 'Leave_room' room_person_key %}" id="leaveRoomLink">&lt;&lt;Leave room</a></p>
-    <input type="hidden" id="room_key" value="{{ room_key }}">
-    <input type="hidden" id="board_key" value="">
-    <input type="hidden" id="user_key" value="{{ user_uid }}">
-    <input type="hidden" id="isPlayer" value="0">
-    <input type="hidden" id="matchStarted" value="0">
-    <input type="hidden" id="matchTurn" value="1">
-    <input type="hidden" id="user1" value="">
-    <input type="hidden" id="user2" value="">
-    <div id="leftArea">
-        <div id="board"></div>
-        <p>&nbsp;<span id="countTime"></span></p>
-        <button id="readyBtn">Ready</button>
-        <button id="notReadyBtn" disabled>Not ready</button>
-        <input type="hidden" id="readyState" value="0">
-    </div>
-    
-    <div style="width: 38%;" id="infoRoom">
-        <div style="height: 50px; width: 70px; border: 1px dashed red;" id="player1">#1</div>
-        <div style="height: 50px; width: 70px; border: 1px dashed yellow;" id="player2">#2</div>
-        <div style="height: 215px; width: 200px; border: 1px dashed green;">
-            <label for="board_type">Board type</label><br>
-            <select name="board_type" id="board_type">
-                <option value="">Choose type</option>
-                <option value="3">3x3</option>
-                <option value="4">4x4</option>
-                <option value="5">5x5</option>
-                <option value="6">6x6</option>
-                <option value="7">7x7</option>
-                <option value="8">8x8</option>
-            </select><br><br>
-            
-            <label>Match type</label><br>
-            <input type="radio" name="match_type" id="withComputer" value="0">
-            <label for="withComputer">Match with computer</label><br>
-            <input type="radio" name="match_type" id="withPlayer" value="1">
-            <label for="withPlayer">Match with player</label>
-            <br><br>
-
-            <label for="time">Time of a turn</label><br>
-            <input type="number" name="time" id="time" min="5" max="90"> (seconds)<br><br>
-
-            <button id="setRuleBtn">Set rule</button>
-        </div>
-        <div style="height: 150px; width: 150px; border: 1px dashed orange;">Chat</div>
-        <div style="height: 150px; width: 120px; border: 1px dashed brown;" id="containPersons">Room person</div>
-    </div>
-    <script src="{% static 'js/ShowRoom/InitAndSetRule.js' %}"></script>
-    <script src="{% static 'js/ShowRoom/Match.js' %}"></script>
-    <script src="{% static 'js/ShowRoom/Algorithm.js' %}"></script>
-</body>
-</html> -->

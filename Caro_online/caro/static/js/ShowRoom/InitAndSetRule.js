@@ -42,7 +42,6 @@ room.once("value", function(snapshot) {
         document.getElementById("withComputer").disabled = true;
         document.getElementById("withPlayer").disabled = true;
         document.getElementById("time").disabled = true;
-        document.getElementById("setRuleBtn").disabled = true;
         document.getElementById("setRuleBtn").classList.add("disabled");
     }
 });
@@ -65,6 +64,14 @@ document.getElementById("setRuleBtn").onclick = function() {
     {
         match_type = 0;
     }
+
+        //check match_type with board_type: computer can't play more than 3x3
+    if((match_type == 0) && (board_type*1 >= 4))
+    {
+        alert("Computer can't play more than 3x3");
+        return;
+    }
+
         // time
     time = document.getElementById("time").value;
 

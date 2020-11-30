@@ -33,6 +33,22 @@ data_room_person.on("value", function(snapshot) {
     document.getElementById("member").innerHTML = str;
 });
 
+    // Update boss_room if it changes
+var data_boss_room = firebase.database().ref("rooms").child(room_key).child("boss_room");
+data_boss_room.on("value", function(snapshot) {
+    var boss_room = snapshot.val();
+    document.getElementById("boss_room").value = boss_room;
+    var matchStarted = document.getElementById("matchStarted").value;
+    var user_key = document.getElementById("user_key").value;
+    if((matchStarted == "0") && (user_key == boss_room))
+    {
+        document.getElementById("board_type").disabled = false;
+        document.getElementById("withComputer").disabled = false;
+        document.getElementById("withPlayer").disabled = false;
+        document.getElementById("time").disabled = false;
+        document.getElementById("setRuleBtn").classList.remove("disabled");
+    }
+});
 
     // Update board_key when create new board
 var data_board_of_room = firebase.database().ref("rooms").child(room_key).child("board");
@@ -41,17 +57,21 @@ data_board_of_room.on("value", function(snapshot) {
     document.getElementById("board_key").value = board_key;
     
     // Reset temp value
-    document.getElementById("setRuleBtn").disabled = false;
-    var withComputer = document.getElementById("withComputer");
-    if(withComputer.checked && withComputer.disabled)
+        // check is boss_room?
+    var boss_room = document.getElementById("boss_room").value;
+    var user_key = document.getElementById("user_key").value;
+    if(user_key == boss_room)
     {
-        document.getElementById("readyBtn").disabled = true;    
+        document.getElementById("board_type").disabled = false;
+        document.getElementById("withComputer").disabled = false;
+        document.getElementById("withPlayer").disabled = false;
+        document.getElementById("time").disabled = false;
+        document.getElementById("setRuleBtn").classList.remove("disabled");
     }
-    else
-    {
-        document.getElementById("readyBtn").disabled = false;
-    }
-    document.getElementById("notReadyBtn").disabled = true;
+    document.getElementById("readyBtn").classList.remove('disabled');
+    document.getElementById("notReadyBtn").classList.add('disabled');
+    document.getElementById("leaveRoomBtn").classList.remove('disabled');
+
     document.getElementById("countTime").innerHTML = "";
     document.getElementById("matchTurn").value = "1";
     document.getElementById("matchStarted").value = "0";
@@ -93,20 +113,21 @@ function ControlBoard(board_key)
         if((board_detail.user1 != "") && (board_detail.user2 != "") && (matchStarted == "0"))
         {
             document.getElementById("matchStarted").value = "1";
-            document.getElementById("readyBtn").disabled = true;
-            document.getElementById("notReadyBtn").disabled = true;
+            document.getElementById("readyBtn").classList.add('disabled');
+            document.getElementById("notReadyBtn").classList.add('disabled');
 
             document.getElementById("user1").value = board_detail.user1;
             document.getElementById("user2").value = board_detail.user2;
 
                 // disabled button setting rule of boss_room
-            document.getElementById("setRuleBtn").disabled = true;
+            document.getElementById("setRuleBtn").classList.add('disabled');
 
             // Define is player
             user_key = document.getElementById("user_key").value;
             if(user_key == board_detail.user1 || user_key == board_detail.user2)
             {
                 document.getElementById("isPlayer").value = "1";
+                document.getElementById('leaveRoomBtn').classList.add('disabled');
             }
 
             // Set board table again
@@ -180,9 +201,10 @@ function ControlBoard(board_key)
             }, 1000);
 
                 // Run whenever user choose position or out of time
-            var boss_room = room.boss_room;
             var data_position_board = firebase.database().ref("boards").child(board_key).child("positions");
             data_position_board.on("child_added", function(snapshot) {
+                document.getElementById("timeOfPlayer1").innerHTML = '';
+                document.getElementById("timeOfPlayer2").innerHTML = '';
                 var position = snapshot.val();
                 var x = position.position_x;
                 var y = position.position_y;
@@ -237,6 +259,7 @@ function ControlBoard(board_key)
                             }
                         }
                         var user_key = document.getElementById("user_key").value;
+                        var boss_room = document.getElementById("boss_room").value;
                         if(user_key == boss_room)
                         {
                             var time = document.getElementById("time").value *1;
@@ -326,7 +349,7 @@ function ControlBoard(board_key)
                         // Computer choose a position
                     var user_key = document.getElementById("user_key").value;
                     var matchTurn = document.getElementById("matchTurn").value;
-                    if((user2 == "Computer") && (matchTurn == "2")) //(user_key == boss_room) && 
+                    if((user2 == "Computer") && (matchTurn == "2"))
                     {
                         var str = RunCutBranchAB(amount_to_win);
                         var temp = str.indexOf("_");
@@ -375,13 +398,29 @@ function RunTimer(number)
 {    
     count = setInterval(function() {
         str = number +" seconds";
-        document.getElementById("countTime").innerHTML = str;
+        var matchTurn = document.getElementById('matchTurn').value *1;
+        if(matchTurn == 1)
+        {
+            document.getElementById("timeOfPlayer1").innerHTML = str;
+        }
+        else    // matchTurn == 2
+        {
+            document.getElementById("timeOfPlayer2").innerHTML = str;
+        }
         number--;
 
         if(number == -1)
         {
             clearInterval(count);
-            document.getElementById("countTime").innerHTML = "OUT OF TIME";
+            if(matchTurn == 1)
+            {
+                document.getElementById("timeOfPlayer1").innerHTML = "OUT OF TIME";
+            }
+            else    // matchTurn == 2
+            {
+                document.getElementById("timeOfPlayer2").innerHTML = "OUT OF TIME";
+            }
+
                 // User do not choose a position but was out of time
             ChoosePosition(0, 0);
         }
@@ -390,11 +429,13 @@ function RunTimer(number)
 
 
 //Ready button and Not Ready button
-readyBtn = document.getElementById("readyBtn");
-notReadyBtn = document.getElementById("notReadyBtn");
+var readyBtn = document.getElementById("readyBtn");
+var notReadyBtn = document.getElementById("notReadyBtn");
+var leaveRoomBtn = document.getElementById("leaveRoomBtn");
 readyBtn.onclick = function() {
-    readyBtn.disabled = true;
-    notReadyBtn.disabled = false;
+    readyBtn.classList.add('disabled');
+    notReadyBtn.classList.remove('disabled');
+    leaveRoomBtn.classList.add('disabled');
     document.getElementById("readyState").value = "1";
         
         // Check user1, user2
@@ -420,8 +461,9 @@ readyBtn.onclick = function() {
 
 
 notReadyBtn.onclick = function() {
-    readyBtn.disabled = false;
-    notReadyBtn.disabled = true;
+    readyBtn.classList.remove('disabled');
+    notReadyBtn.classList.add('disabled');
+    leaveRoomBtn.classList.remove('disabled');
     document.getElementById("readyState").value = "0";
     
         // user leave this board
@@ -548,4 +590,35 @@ function ChooseInfoRoom(type)
     {
         member.style.display = "block";
     }
+}
+
+
+var data_chat_room = firebase.database().ref("messages").orderByChild('room').equalTo(room_key);
+data_chat_room.on("child_added", function(snapshot) {
+    var chat_item = snapshot.val();
+    var str = '<div class="item">';
+        str += chat_item.name +': '+ chat_item.content;
+    str += '</div>';
+    var chatBox = document.getElementById('chatBox');
+    var temp = chatBox.innerHTML + str;
+    chatBox.innerHTML = temp;
+});    
+
+function SendMessage()
+{
+    var message = document.getElementById('message').value;
+    if(message == "")
+    {
+        alert('Message content does not blank');
+        return;
+    }
+    user_key = document.getElementById('user_key').value;
+    data = {
+        "name": GetUserName(user_key),
+        "user": user_key,
+        "room": room_key,
+        "content": message
+    }
+    firebase.database().ref("messages").push(data)
+    document.getElementById('message').value = '';
 }

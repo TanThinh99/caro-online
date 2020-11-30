@@ -187,17 +187,29 @@ def LeaveRoom(request, room_person_key):
         # Get room_key
     room_key = database.child("room_persons").child(room_person_key).child("room").get().val()
     board_key = database.child("rooms").child(room_key).child("board").get().val()
+    person_key = database.child("room_persons").child(room_person_key).child("user").get().val()
         # Delete room_person at room_person_key
     database.child("room_persons").child(room_person_key).remove()
 
         # If room doesn't have user, we will delete it
     try:
         persons = database.child("room_persons").order_by_child("room").equal_to(room_key).get().val()
+        boss_room = database.child("rooms").child(room_key).child("boss_room").get().val()
+        if(boss_room == person_key):
+            for x in persons:
+                new_boss_room = persons[x].get('user')
+                print(persons[x].get('user'))
+                break
+            database.child("rooms").child(room_key).update({"boss_room": new_boss_room})
     except:
         database.child("rooms").child(room_key).remove()
 
             # Delete new board of this room
         database.child("boards").child(board_key).remove()
+
+            # Delete messages in this room
+        database.child("messages").order_by_child("room").equal_to(room_key).remove()
+
     return redirect("../ChooseRoom")
 
 
