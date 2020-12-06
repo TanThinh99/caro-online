@@ -2,13 +2,28 @@
 
 {% block title %}Welcome to Gomoku{% endblock %}
 
+{% load static %}
+
 {% block linkHead %}{% endblock %}
 
 {% block content %}
     {% if name %}
         <div class="welcomeUser">Welcome {{ name }}</div>
+        <p style="font-size:21px;">Số điểm hiện tại của bạn là: <span id="yourScore"></span> điểm</p>
         <a href="{% url 'Choose_room' %}" class="function">Choose room</a>
         <a href="{% url 'Logout' %}" class="function">Logout</a>
+
+        <input type="hidden" id="user_key" value="{{ user_key }}">
+        <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+        <script src="{% static 'js/firebase_config.js' %}"></script>
+        <script>
+            var user_key = document.getElementById('user_key').value;
+            var data_score = firebase.database().ref("users").child(user_key).child("score");
+            data_score.once("value", function(snapshot) {
+                var score = snapshot.val();
+                document.getElementById('yourScore').innerHTML = score;
+            })
+        </script>
     {% else %}
         <a href="{% url 'Get_login' %}" class="function">Login</a>
         <a href="{% url 'Get_register' %}" class="function">Register</a>

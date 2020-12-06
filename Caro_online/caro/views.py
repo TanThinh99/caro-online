@@ -31,7 +31,11 @@ def Index(request):
     uid = user.get("localId")
     user = database.child("users").child(uid).get().val()
     name = user.get("name")
-    return render(request, "Index.html", {"name": name})
+    data = {
+        "name": name,
+        "user_key": uid
+    }
+    return render(request, "Index.html", data)
 
 
 def GetUser(token):

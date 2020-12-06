@@ -257,6 +257,53 @@ function ControlBoard(board_key)
                                 y = positionList[i][1];
                                 document.getElementById("pos"+ x +"_"+ y).style.backgroundColor = "yellow";
                             }
+
+                                // Add score or sub score
+                            var isPlayer = document.getElementById('isPlayer').value;
+                            var user_key = document.getElementById('user_key').value;
+                            var user1 = document.getElementById('user1').value;
+                            var user2 = document.getElementById('user2').value;
+                            if((userList[user_key] != undefined) && (isPlayer == '1'))
+                            {
+                                var newScore = 0;
+                                if(position.flag_type == "x")
+                                {
+                                        // user1 won
+                                    if(user_key == user1)
+                                    {
+                                        newScore = 1;
+                                    }
+                                    else
+                                    {
+                                        newScore = -1;
+                                    }
+                                }
+                                else if(position.flag_type == "o")
+                                {
+                                        // user2 won
+                                    if(user_key == user2)
+                                    {
+                                        newScore = 1;
+                                    }
+                                    else
+                                    {
+                                        newScore = -1;
+                                    }
+                                }
+                                var data_score = firebase.database().ref("users").child(user_key).child("score");
+                                data_score.once("value", function(snapshot) {
+                                    var score = snapshot.val();
+                                    score = score + newScore;
+                                    if(score < 0)
+                                    {
+                                        score = 0;
+                                    }
+                                    data = {
+                                        "score": score
+                                    }
+                                    firebase.database().ref('users').child(user_key).update(data);
+                                });                                    
+                            }
                         }
                         var user_key = document.getElementById("user_key").value;
                         var boss_room = document.getElementById("boss_room").value;
@@ -295,7 +342,7 @@ function ControlBoard(board_key)
                             }
                             firebase.database().ref("boards").child(board_key).child("detail").update(data);
                         
-                            // Check match with computer
+                                // Check match with computer
                             var user2 = ""
                             withComputer = document.getElementById("withComputer");
                             if(withComputer.checked)
@@ -377,7 +424,6 @@ function RunCutBranchAB(amount_to_win)
                 // Máy là cờ O, Người là cờ X     
                 // MAX là O đi, MIN là X đi
                 var str = CutBranchAB(rows, "MIN", vp, amount_to_win, i, j);
-                console.log(str);
                 var vq = Get_Vq(str);
                 if(vq > vp)
                 {
