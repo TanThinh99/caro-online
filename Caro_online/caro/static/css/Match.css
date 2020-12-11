@@ -12,6 +12,14 @@ body {
   background-size: 124% 69%;
 }
 
+.hiUser {
+  margin: 1px auto 12px 1%;
+  font-size: 20px;
+  display: inline-block;
+  font-weight: bold;
+  color: white;
+}
+
 .main {
   display: flex;
   flex-wrap: wrap;
@@ -31,6 +39,7 @@ body {
   position: absolute;
   top: 8%;
   left: 26%;
+  z-index: 1;
   color: red;
   font-weight: bold;
   font-size: 19px;
@@ -49,6 +58,14 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 2px;
+  border: 1px solid black;
+  text-align: center;
+}
+
+#board .order {
+  border-width: 0px;
+  font-weight: bold;
+  font-size: 22px;
 }
 
 .x {
@@ -136,7 +153,11 @@ body {
   padding: 10px;
   margin-bottom: 13px;
   margin-right: 13px;
-  background-color: #5dee3f;
+  background-color: #81ff67;
+}
+
+.playerName img {
+  height: 22px;
 }
 
 .time {

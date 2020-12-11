@@ -8,13 +8,30 @@ room.once("value", function(snapshot) {
         // Board_type
     board_type = room.rules.board_type;
     document.getElementById("board_type").value = board_type;
-    str = "<table border='1'>";
-    for(i=0; i<board_type; i++)
+    str = "<table>";
+    for(i=0; i<=board_type; i++)
     {
         str += "<tr>";
-        for(j=0; j<board_type; j++)
+        for(j=0; j<=board_type; j++)
         {
-            str += "<td></td>";
+            if((i == 0) || (j == 0))
+            {
+                var content = '';
+                if((i == 0) && (j > 0))
+                {
+                    content = j;
+                }
+                else if((j == 0) && (i > 0))
+                {   
+                        // 65 is A (ASCII code)
+                    content = String.fromCharCode(65 + i - 1);  
+                }
+                str += "<td class='order'>"+ content +"</td>";
+            }
+            else
+            {
+                str += "<td></td>";
+            }            
         }
         str += "</tr>"
     }
@@ -68,7 +85,7 @@ document.getElementById("setRuleBtn").onclick = function() {
         //check match_type with board_type: computer can't play more than 3x3
     if((match_type == 0) && (board_type*1 >= 4))
     {
-        alert("Computer can't play more than 3x3");
+        alert("Computer only can play 3x3");
         return;
     }
 
@@ -86,60 +103,67 @@ document.getElementById("setRuleBtn").onclick = function() {
 }
 
 var room_key = document.getElementById("room_key").value;
-var data_boss_room = firebase.database().ref("rooms").child(room_key).child("boss_room");
-data_boss_room.once("value", function(snapshot) {
-    var boss_room = snapshot.val();
-
-    data_rule_room = firebase.database().ref("rooms").child(room_key).child("rules");
-    data_rule_room.on("value", function(snapshot) {
-        rules = snapshot.val();
-            
-            // board_type
-        board_type = rules.board_type;
-        document.getElementById("board_type").value = board_type;
-        str = "<table border='1'>";
-        for(i=0; i<board_type; i++)
+data_rule_room = firebase.database().ref("rooms").child(room_key).child("rules");
+data_rule_room.on("value", function(snapshot) {
+    rules = snapshot.val();
+        
+        // board_type
+    board_type = rules.board_type;
+    document.getElementById("board_type").value = board_type;
+    str = "<table>";
+    for(i=0; i<=board_type; i++)
+    {
+        str += "<tr>";
+        for(j=0; j<=board_type; j++)
         {
-            str += "<tr>";
-            for(j=0; j<board_type; j++)
+            if((i == 0) || (j == 0))
             {
-                str += "<td>&nbsp;</td>";
+                var content = '';
+                if((i == 0) && (j > 0))
+                {
+                    content = j;
+                }
+                else if((j == 0) && (i > 0))
+                {   
+                        // 65 is A (ASCII code)
+                    content = String.fromCharCode(65 + i - 1);  
+                }
+                str += "<td class='order'>"+ content +"</td>";
             }
-            str += "</tr>"
+            else
+            {
+                str += "<td></td>";
+            }            
         }
-        str += "</table>";
-        document.getElementById("board").innerHTML = str;
-            
-            // type
-        var username2 = "";
-        var player2 = "";
-        if(rules.type == 0)
-        {
-            document.getElementById("withComputer").checked = true;
+        str += "</tr>"
+    }
+    str += "</table>";
+    document.getElementById("board").innerHTML = str;
+        
+        // type
+    var username2 = "";
+    var player2 = "";
+    if(rules.type == 0)
+    {
+        document.getElementById("withComputer").checked = true;
 
-            user_key = document.getElementById("user_key").value;
-            // if(user_key != boss_room)
-            // {
-            //     document.getElementById("readyBtn").disabled = true;
-            // }
-            player2 = "#2 Computer";
-            username2 = "Computer";
-        }
-        else if(rules.type == 1)
-        {
-            document.getElementById("withPlayer").checked = true;
-            // document.getElementById("readyBtn").disabled = false;
-            player2 = "#2";
-            username2 = "";
-        }
-        document.getElementById("player2").innerHTML = player2;
-        data = {
-            "user2": username2
-        }
-        board_key = document.getElementById("board_key").value;
-        firebase.database().ref("boards").child(board_key).child("detail").update(data);
+        user_key = document.getElementById("user_key").value;
+        player2 = "Computer";
+        username2 = "Computer";
+    }
+    else if(rules.type == 1)
+    {
+        document.getElementById("withPlayer").checked = true;
+        player2 = "";
+        username2 = "";
+    }
+    document.getElementById("player2").innerHTML = player2;
+    data = {
+        "user2": username2
+    }
+    board_key = document.getElementById("board_key").value;
+    firebase.database().ref("boards").child(board_key).child("detail").update(data);
 
-            // time
-        document.getElementById("time").value = rules.time_of_a_turn;
-    });
+        // time
+    document.getElementById("time").value = rules.time_of_a_turn;
 });

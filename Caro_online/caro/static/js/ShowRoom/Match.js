@@ -6,6 +6,7 @@ users.once("value", function(snapshot) {
     {
         userList[key] = users[key].name;
     }
+    document.getElementById('username').innerHTML = GetUserName(document.getElementById('user_key').value);
 });
 
 function GetUserName(user_key)
@@ -92,20 +93,20 @@ function ControlBoard(board_key)
             // Update name in id="player(1/2)" when user click "ready"
         if(board_detail.user1 != "")
         {
-            document.getElementById("player1").innerHTML = "#1 "+ GetUserName(board_detail.user1);
+            document.getElementById("player1").innerHTML = GetUserName(board_detail.user1);
         }
         else    // board_detail.user1 == ""
         {
-            document.getElementById("player1").innerHTML = "#1";
+            document.getElementById("player1").innerHTML = "";
         }
 
         if(board_detail.user2 != "")
         {
-            document.getElementById("player2").innerHTML = "#2 "+ GetUserName(board_detail.user2);
+            document.getElementById("player2").innerHTML = GetUserName(board_detail.user2);
         }
         else    // board_detail.user2 == ""
         {
-            document.getElementById("player2").innerHTML = "#2";
+            document.getElementById("player2").innerHTML = "";
         }
 
             // Check user1 and user2 are not empty, the match will start
@@ -137,32 +138,49 @@ function ControlBoard(board_key)
             {       // user1 plays first turn
                 if(board_detail.user1 == user_key)
                 {
-                    str = "<table border='1' class='turning' id='positionsTable'>";
+                    str = "<table class='turning' id='positionsTable'>";
                 }
                 else    // board_detail.user2 == user_key
                 {
-                    str = "<table border='1' class='' id='positionsTable'>";
+                    str = "<table class='' id='positionsTable'>";
                 }                    
             }                
             else    // user is not player, or user is #2 player
             {
-                str = "<table border='1'>";    
+                str = "<table>";    
             }
 
                 // Create new table for board
             board_type = document.getElementById("board_type").value;
-            for(i=1; i<=board_type; i++)
+            for(i=0; i<=board_type; i++)
             {
                 str += "<tr>";
-                for(j=1; j<=board_type; j++)
+                for(j=0; j<=board_type; j++)
                 {
-                    if(isPlayer == "1")
+                    if((i == 0) || (j == 0))
                     {
-                        str += "<td id='pos"+ i +"_"+ j +"' onclick='ChoosePosition("+ i +", "+ j +")'>&nbsp;</td>";
+                        var content = '';
+                        if((i == 0) && (j > 0))
+                        {
+                            content = j;
+                        }
+                        else if((j == 0) && (i > 0))
+                        {   
+                                // 65 is A (ASCII code)
+                            content = String.fromCharCode(65 + i - 1);  
+                        }
+                        str += "<td class='order'>"+ content +"</td>";
                     }
-                    else if(isPlayer == "0")
+                    else
                     {
-                        str += "<td id='pos"+ i +"_"+ j +"'></td>";
+                        if(isPlayer == "1")
+                        {
+                            str += "<td id='pos"+ i +"_"+ j +"' onclick='ChoosePosition("+ i +", "+ j +")'>&nbsp;</td>";
+                        }
+                        else if(isPlayer == "0")
+                        {
+                            str += "<td id='pos"+ i +"_"+ j +"'></td>";
+                        }
                     }
                 }
                 str += "</tr>";
@@ -192,7 +210,7 @@ function ControlBoard(board_key)
                 if(number == -1)
                 {
                     clearInterval(count);
-                    document.getElementById("countTime").innerHTML = "START MATCH";
+                    document.getElementById("countTime").innerHTML = "";
 
                         // Run timer
                     time = document.getElementById("time").value *1;
@@ -342,7 +360,7 @@ function ControlBoard(board_key)
                             }
                             firebase.database().ref("boards").child(board_key).child("detail").update(data);
                         
-                                // Check match with computer
+                                // Check match with computer to create new board (follow)
                             var user2 = ""
                             withComputer = document.getElementById("withComputer");
                             if(withComputer.checked)

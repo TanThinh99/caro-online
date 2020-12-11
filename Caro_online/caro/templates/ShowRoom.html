@@ -21,6 +21,7 @@
     <input type="hidden" id="user1" value="">
     <input type="hidden" id="user2" value="">
     
+    <div class="hiUser">Hi, <span id="username"></span></div>
     <div class="main">
         <div class="left">
             <div id="board"></div>
@@ -34,14 +35,16 @@
                 </div>
                 <div class="infoPlayer">
                     <div class="player">
-                        <div class="playerName" id="player1">
-                            #1
+                        <div class="playerName">
+                            <img src="{% static 'image/x.png' %}" alt="">&nbsp;
+                            <span id="player1"></span>
                         </div>
                         <div class="time" id="timeOfPlayer1"></div>
                     </div>
                     <div class="player">
-                        <div class="playerName" id="player2">
-                            #2
+                        <div class="playerName">
+                            <img src="{% static 'image/o.png' %}" alt="">&nbsp;
+                            <span id="player2"></span>
                         </div>
                         <div class="time" id="timeOfPlayer2"></div>
                     </div>
